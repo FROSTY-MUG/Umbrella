@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { WindowState, AppManifest, SampleRef } from "../types/desktop";
 
 export const NATIVE_APPS: AppManifest[] = [
+  { id: "benchmark-dna", name: "DNA Benchmark", acronym: "DB", category: "genomics", description: "Age & gender demographic benchmark with self-building ASCII double helix", defaultWidth: 920, defaultHeight: 620, minWidth: 720, minHeight: 480 },
   { id: "genome-analyzer", name: "Genome Analyzer", acronym: "GA", category: "core_bio", description: "Sequence inspection, contigs, GC% distribution, and launchpad", defaultWidth: 840, defaultHeight: 560, minWidth: 640, minHeight: 420 },
   { id: "mutation-lab", name: "Mutation Lab", acronym: "ML", category: "sequence_diff", description: "Reference vs query comparison, SNP/INDEL detection and coordinates", defaultWidth: 860, defaultHeight: 560, minWidth: 680, minHeight: 440 },
   { id: "amr-sentinel", name: "AMR Sentinel", acronym: "AS", category: "antimicrobial_resistance", description: "Flagship resistome surveillance, drug panel and evidence dossier", defaultWidth: 880, defaultHeight: 580, minWidth: 700, minHeight: 450 },
@@ -46,11 +47,27 @@ interface DesktopStore {
 export const useDesktopStore = create<DesktopStore>((set, get) => ({
   windows: [
     {
+      id: "win-init-db",
+      appId: "benchmark-dna",
+      title: "DNA Demographic Benchmark & Synthesizer",
+      x: 70,
+      y: 40,
+      width: 960,
+      height: 640,
+      minWidth: 720,
+      minHeight: 480,
+      zIndex: 11,
+      minimized: false,
+      maximized: false,
+      focused: true,
+      props: {}
+    },
+    {
       id: "win-init-ga",
       appId: "genome-analyzer",
       title: "Genome Analyzer // SMP-1827",
-      x: 60,
-      y: 50,
+      x: 120,
+      y: 90,
       width: 860,
       height: 560,
       minWidth: 640,
@@ -58,11 +75,11 @@ export const useDesktopStore = create<DesktopStore>((set, get) => ({
       zIndex: 10,
       minimized: false,
       maximized: false,
-      focused: true,
+      focused: false,
       props: { sampleId: "SMP-1827" }
     }
   ],
-  activeWindowId: "win-init-ga",
+  activeWindowId: "win-init-db",
   highestZIndex: 10,
   launcherOpen: false,
   activeSample: {

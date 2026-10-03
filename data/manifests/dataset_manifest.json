@@ -1,0 +1,9 @@
+{
+  "dataset_id": "umbrella-init-2026",
+  "source": "BV-BRC / NCBI AMRFinderPlus",
+  "version": "1.0.0",
+  "created_at": "2026-10-04T00:00:00Z",
+  "genomes_staged": 0,
+  "phenotype_records": 0,
+  "status": "INITIALIZED"
+}

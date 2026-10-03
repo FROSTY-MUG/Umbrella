@@ -25,6 +25,7 @@ import { UmbrellaForgeApp } from "../apps/UmbrellaForgeApp";
 import { VellaApp } from "../apps/VellaApp";
 import { SystemMonitorApp } from "../apps/SystemMonitorApp";
 import { GeneratedForgeAppView } from "../apps/GeneratedForgeAppView";
+import { BenchmarkDnaApp } from "../apps/BenchmarkDnaApp";
 
 export default function DesktopPage() {
   const { windows, installedApps, closeWindow, activeWindowId, setLauncherOpen, toggleLauncher } =
@@ -51,6 +52,8 @@ export default function DesktopPage() {
 
   const renderAppContent = (win: any) => {
     switch (win.appId) {
+      case "benchmark-dna":
+        return <BenchmarkDnaApp />;
       case "genome-analyzer":
         return <GenomeAnalyzerApp sampleId={win.props?.sampleId} />;
       case "amr-sentinel":
