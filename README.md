@@ -207,6 +207,7 @@ Umbrella/
 
 | App | Category | Status |
 |-----|----------|--------|
+| **DNA Benchmark** | Genomics / Demographics | Flagship demographic benchmark, self-building ASCII double helix, epigenetic age calculator |
 | **Genome Analyzer** | Core bio | UI complete, backend wired |
 | **AMR Sentinel** | Antimicrobial resistance | UI complete, ML inference wired |
 | **Sequence QC** | Quality control | UI complete, backend wired |
@@ -247,23 +248,38 @@ python -m ml.training.train_baseline
 
 ---
 
-## Umbrella CLI
+## Umbrella CLI & Tooling
+
+Umbrella OS provides a unified CLI cross-compatible with Windows (PowerShell, Batch) and Linux/WSL (`./umbrella`):
 
 ```powershell
-# Check system health — Python, Node, pnpm, WSL2, Docker, disk, data lake
-python umbrella.py doctor
+# 1. System Health & Environment Audit
+python umbrella.py doctor          # Or .\umbrella.ps1 doctor / umbrella doctor
+python umbrella.py system status   # Real-time CPU, RAM, disk, services telemetry
 
-# Initialise data lake directory structure
-python umbrella.py data init
+# 2. Scientific Data Lake Management
+python umbrella.py data init       # Initialize all 12 lake directories & manifests
+python umbrella.py data inspect    # Storage breakdown & file count audit
+python umbrella.py data manifest   # View master dataset manifests
+python umbrella.py data download   # Download BV-BRC genomes & phenotypes
+python umbrella.py data verify     # Verify SHA-256 checksums across lake
 
-# Inspect dataset manifests
-python umbrella.py data manifest
+# 3. AMR & Machine Learning Pipeline
+python umbrella.py amr list-models # List panel status across 34 target antibiotics
+python umbrella.py ml train        # Train baseline logistic regression & GBM models
+python umbrella.py ml evaluate     # Evaluate ROC-AUC, PR-AUC, F1, and sensitivity
 
-# Run FASTA QC
-python umbrella.py qc --input path/to/genome.fna
+# 4. Laboratory Operations
+python umbrella.py lab qc --input path/to/genome.fna
+python umbrella.py lab radiation --dose 100 --let high
 ```
 
-On Windows, `umbrella.bat` wraps `umbrella.py` so you can call `umbrella doctor` directly.
+Cross-platform helpers are provided under `infra/scripts/`:
+- `setup-wsl.sh`: Automated Ubuntu WSL2 setup (build-essential, cmake, pigz, lftp, venv, AMRFinderPlus).
+- `setup-windows.ps1`: Windows drive audit, WSL2 setup, Docker guidance.
+- `install-amrfinder.sh`: Version-pinned NCBI AMRFinderPlus installer.
+- `storage-audit.ps1` / `storage-audit.sh`: Volume capacity audit for optimal `DATA_ROOT`.
+- `start-infra.ps1` / `start-infra.sh`: Docker Compose infrastructure orchestrator.
 
 ---
 

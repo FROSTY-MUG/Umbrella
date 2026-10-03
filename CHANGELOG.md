@@ -18,6 +18,22 @@ Changes in progress but not yet in a tagged release.
 - MinIO FASTA object storage integration
 - TanStack Query + Zod frontend hardening
 
+## [0.2.0] — 2026-10-04
+
+### Added
+- **DNA Demographic Benchmark & Synthesizer (`benchmark-dna`)**:
+  - Demographic reference genome matrix stratified by age group (Pediatric <18, Young Adult 18-35, Adult 36-55, Senior 56-70, Geriatric 70+) and gender karyotype (Male 46,XY, Female 46,XX, Universal 46,XX/XY).
+  - Self-building ASCII art DNA double helix with real-time dynamic synthesis, nucleotide base pairing, and dual ladder/3D rotating projection modes.
+  - Emil Kowalski-inspired Framer Motion micro-interactions (`layoutId` sliding pill indicators, spring physics, fluid age sliders, expanding clinical trait cards).
+  - Epigenetic biological age estimation, telomeric decay reserve calculation, somatic variant load comparison, and clinical report export.
+- **Unified Umbrella CLI Architecture (`umbrella.py`)**:
+  - `umbrella doctor` reporting on all 22 system runtime criteria.
+  - `umbrella system status` displaying real-time telemetry and services status.
+  - Full `umbrella data`, `umbrella ml`, `umbrella amr list-models`, and `umbrella lab` subcommands.
+  - Cross-platform wrappers: `umbrella.ps1`, `umbrella.bat`, and WSL `./umbrella`.
+- **Infrastructure Scripts (`infra/scripts/`)**:
+  - `setup-wsl.sh`, `setup-windows.ps1`, `install-amrfinder.sh`, `storage-audit.ps1`/`.sh`, `start-infra.ps1`/`.sh`.
+
 ---
 
 ## [0.1.0] — 2026-10-04
