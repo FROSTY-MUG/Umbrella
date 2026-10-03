@@ -1,12 +1,14 @@
 {
   "name": "@umbrella/desktop",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
+  "description": "Umbrella OS — browser-based desktop OS shell for computational biology",
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "clsx": "^2.1.1",
