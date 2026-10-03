@@ -1,0 +1,19 @@
+{
+  "name": "umbrella-os",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-Native Computational Biology Operating System",
+  "scripts": {
+    "dev": "pnpm --filter @umbrella/desktop dev",
+    "dev:all": "concurrently \"pnpm --filter @umbrella/desktop dev\" \"python -m uvicorn services.api.main:app --reload --port 8000\"",
+    "build": "pnpm --filter @umbrella/desktop build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "api:dev": "python -m uvicorn services.api.main:app --reload --port 8000"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.3"
+  }
+}

@@ -1,0 +1,105 @@
+version: "1.0.0"
+system:
+  name: "Umbrella OS"
+  release: "Full Product Edition 2026"
+  identity: "Bio-Computational Operating System"
+  security_mode: "capability_gated"
+
+storage:
+  data_root: "data"
+  manifests_dir: "data/manifests"
+  raw_genomes_dir: "data/raw/genomes"
+  derived_features_dir: "data/derived/features"
+  models_dir: "data/models"
+  indexes_dir: "data/indexes"
+  target_capacity_gb: 120
+  active_slice_max_gb: 5
+
+database:
+  driver: "postgresql+asyncpg"
+  fallback_sqlite: "data/umbrella_local.db"
+  schema_init_path: "infra/postgres/init.sql"
+
+compute:
+  engine: "hybrid_python_cpp"
+  max_worker_concurrency: 4
+  hot_path_acceleration: true
+
+amr_pipeline:
+  default_tool: "amrfinderplus"
+  software_version_pinned: "4.2.7"
+  database_version_pinned: "2024-05-02.1"
+  cross_check_tool: "resfinder"
+  canonical_antibiotics:
+    - "Ciprofloxacin"
+    - "Meropenem"
+    - "Tetracycline"
+    - "Gentamicin"
+    - "Amoxicillin"
+    - "Ceftriaxone"
+    - "Trimethoprim-sulfamethoxazole"
+
+vella:
+  primary_provider: "gemini"
+  fallback_provider: "openrouter"
+  offline_provider: "deterministic_local"
+  intent_confidence_threshold: 0.75
+
+apps:
+  registered:
+    - id: "genome-analyzer"
+      name: "Genome Analyzer"
+      acronym: "GA"
+      category: "core_bio"
+    - id: "mutation-lab"
+      name: "Mutation Lab"
+      acronym: "ML"
+      category: "sequence_diff"
+    - id: "amr-sentinel"
+      name: "AMR Sentinel"
+      acronym: "AS"
+      category: "antimicrobial_resistance"
+    - id: "sequence-qc"
+      name: "Sequence QC"
+      acronym: "QC"
+      category: "quality_control"
+    - id: "sample-vault"
+      name: "Sample Vault"
+      acronym: "SV"
+      category: "data_registry"
+    - id: "pathogen-atlas"
+      name: "Pathogen Atlas"
+      acronym: "PA"
+      category: "taxonomy"
+    - id: "variant-explorer"
+      name: "Variant Explorer"
+      acronym: "VE"
+      category: "genomics"
+    - id: "radiation-lab"
+      name: "Radiation Lab"
+      acronym: "RL"
+      category: "simulation"
+    - id: "science-lab"
+      name: "Science Lab"
+      acronym: "SL"
+      category: "simulation"
+    - id: "research-desk"
+      name: "Research Desk"
+      acronym: "RD"
+      category: "research"
+    - id: "analysis-studio"
+      name: "Analysis Studio"
+      acronym: "AS"
+      category: "analytics"
+    - id: "bio-terminal"
+      name: "Bio Terminal"
+      acronym: "BT"
+      category: "system"
+    - id: "report-studio"
+      name: "Report Studio"
+      acronym: "RS"
+      category: "reporting"
+    - id: "umbrella-forge"
+      name: "Umbrella Forge"
+      acronym: "AF"
+      category: "meta_compiler"

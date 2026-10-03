@@ -1,0 +1,34 @@
+# Node
+node_modules/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+*.egg-info/
+.pytest_cache/
+
+# Databases & local storage
+*.db
+*.sqlite3
+data/raw/
+data/derived/
+data/indexes/
+data/models/*.joblib
+!data/manifests/
+!data/benchmark/*.json
+
+# Logs & temp
+*.log
+.DS_Store
+Thumbs.db
+.env
+!.env.example

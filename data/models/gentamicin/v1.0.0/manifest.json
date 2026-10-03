@@ -1,0 +1,104 @@
+{
+  "model_id": "amr-baseline-gentamicin-v1.0.0",
+  "target_antibiotic": "Gentamicin",
+  "model_version": "v1.0.0",
+  "algorithm": "Regularized Logistic Regression (L2) + Sigmoid Calibration",
+  "feature_schema": [
+    "has_blaTEM",
+    "has_blaSHV",
+    "has_blaCTX-M",
+    "has_blaOXA",
+    "has_blaKPC",
+    "has_blaNDM",
+    "has_blaVIM",
+    "has_blaIMP",
+    "has_gyrA_D87G",
+    "has_gyrA_S83L",
+    "has_parC_S80I",
+    "has_qnrA",
+    "has_qnrB",
+    "has_qnrS",
+    "has_aac(3)",
+    "has_aac(6')",
+    "has_aadA",
+    "has_aph(3')",
+    "has_armA",
+    "has_rmtB",
+    "has_tet(A)",
+    "has_tet(B)",
+    "has_tet(M)",
+    "has_tet(X)",
+    "has_erm(A)",
+    "has_erm(B)",
+    "has_erm(C)",
+    "has_mph(A)",
+    "has_sul1",
+    "has_sul2",
+    "has_dfrA1",
+    "has_dfrA12",
+    "has_mcr-1",
+    "has_mcr-2",
+    "has_rpoB_S531L",
+    "has_rpoB_H526Y",
+    "gc_fraction",
+    "contigs_log",
+    "length_mb",
+    "total_amr_marker_count"
+  ],
+  "training_dataset": "BV-BRC Bacterial Laboratory Phenotype Benchmark",
+  "split_strategy": "stratified_by_genome_60_20_20",
+  "created_at": "2026-10-04T00:00:00Z",
+  "metrics": {
+    "roc_auc": 0.9334,
+    "pr_auc": 0.9211,
+    "brier_score": 0.0742,
+    "precision": 0.9457,
+    "recall": 0.9104,
+    "f1_score": 0.9278,
+    "confusion_matrix": [
+      [
+        159,
+        7
+      ],
+      [
+        12,
+        122
+      ]
+    ],
+    "test_sample_count": 300,
+    "top_features": [
+      {
+        "feature": "has_armA",
+        "weight": 1.312
+      },
+      {
+        "feature": "has_rmtB",
+        "weight": 1.2324
+      },
+      {
+        "feature": "has_aac(3)",
+        "weight": 1.0848
+      },
+      {
+        "feature": "has_aac(6')",
+        "weight": 1.0672
+      },
+      {
+        "feature": "total_amr_marker_count",
+        "weight": 0.6704
+      },
+      {
+        "feature": "has_qnrA",
+        "weight": -0.3082
+      },
+      {
+        "feature": "has_blaOXA",
+        "weight": -0.2596
+      },
+      {
+        "feature": "has_blaVIM",
+        "weight": -0.2502
+      }
+    ]
+  }
+}

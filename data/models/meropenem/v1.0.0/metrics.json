@@ -1,0 +1,53 @@
+{
+  "roc_auc": 0.9095,
+  "pr_auc": 0.8724,
+  "brier_score": 0.0918,
+  "precision": 0.9006,
+  "recall": 0.9416,
+  "f1_score": 0.9206,
+  "confusion_matrix": [
+    [
+      130,
+      16
+    ],
+    [
+      9,
+      145
+    ]
+  ],
+  "test_sample_count": 300,
+  "top_features": [
+    {
+      "feature": "has_blaVIM",
+      "weight": 1.2955
+    },
+    {
+      "feature": "has_blaNDM",
+      "weight": 1.2444
+    },
+    {
+      "feature": "has_blaKPC",
+      "weight": 1.0821
+    },
+    {
+      "feature": "has_blaOXA",
+      "weight": 0.9984
+    },
+    {
+      "feature": "has_blaIMP",
+      "weight": 0.9575
+    },
+    {
+      "feature": "total_amr_marker_count",
+      "weight": 0.8007
+    },
+    {
+      "feature": "has_erm(A)",
+      "weight": -0.3608
+    },
+    {
+      "feature": "has_aac(6')",
+      "weight": -0.3467
+    }
+  ]
+}
