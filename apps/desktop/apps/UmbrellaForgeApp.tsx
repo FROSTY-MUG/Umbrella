@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Wrench, Play, CheckCircle2, AlertTriangle, Code, Cpu, Database, ChevronRight, Download } from "lucide-react";
+import { Wrench, Play, CheckCircle2, AlertTriangle, Code, Cpu, Database, ChevronRight, Download, Shield } from "lucide-react";
 import { useDesktopStore } from "../lib/store";
 
 interface ForgePipelineStage {
