@@ -137,7 +137,11 @@ export function StressLabApp() {
 
         // Rounded bacterial rod capsule
         ctx.beginPath();
-        ctx.roundRect(-width / 2, -height / 2, width, height, 4);
+        if (typeof ctx.roundRect === "function") {
+          ctx.roundRect(-width / 2, -height / 2, width, height, 4);
+        } else {
+          ctx.rect(-width / 2, -height / 2, width, height);
+        }
         ctx.fill();
         ctx.stroke();
 

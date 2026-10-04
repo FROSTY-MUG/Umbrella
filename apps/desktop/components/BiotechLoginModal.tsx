@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Lock, ArrowRight, UserCheck, AlertCircle, Sparkles, CheckCircle2 } from "lucide-react";
+import { Shield, Lock, ArrowRight, UserCheck, AlertCircle, Sparkles, CheckCircle2, X } from "lucide-react";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -99,11 +99,15 @@ export function BiotechLoginModal({ isOpen, onClose, onLoginSuccess }: LoginModa
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md"
+        onClick={onClose}
+      >
         {/* Subtle radial glow */}
         <div className="absolute inset-0 bg-[radial-gradient(#f59e0b12_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
         <motion.div
+          onClick={(e) => e.stopPropagation()}
           initial={{ opacity: 0, scale: 0.94, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 15 }}
@@ -112,6 +116,16 @@ export function BiotechLoginModal({ isOpen, onClose, onLoginSuccess }: LoginModa
         >
           {/* Top Yellow Warning Accent Line */}
           <div className="h-1.5 w-full bg-[#f59e0b]" />
+
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute top-3 right-3 p-1.5 rounded-full text-neutral-400 hover:text-white hover:bg-white/10 transition-colors z-10"
+            aria-label="Close clearance portal"
+          >
+            <X className="w-4 h-4" />
+          </button>
 
           {authStage === "authorized" ? (
             <motion.div
