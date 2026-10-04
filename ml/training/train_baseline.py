@@ -5,10 +5,16 @@ computes clinical & ML evaluation metrics, and persists versioned model artifact
 """
 
 import os
+import sys
 import json
 import random
 from pathlib import Path
 from typing import Dict, Any, List
+
+# Ensure repo root is on sys.path so local packages resolve correctly
+ROOT_DIR = Path(__file__).resolve().parents[2]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 
 import numpy as np
 import pandas as pd
@@ -26,8 +32,6 @@ from sklearn.metrics import (
 import joblib
 
 from ml.features.extractor import get_feature_schema, CANONICAL_AMR_MARKERS
-
-ROOT_DIR = Path(__file__).resolve().parents[2]
 
 # Antibiotic-specific driver resistance markers
 ANTIBIOTIC_DRIVERS = {

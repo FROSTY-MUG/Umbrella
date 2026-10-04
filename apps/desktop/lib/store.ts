@@ -58,39 +58,19 @@ export const useDesktopStore = create<DesktopStore>((set, get) => ({
       height: 640,
       minWidth: 720,
       minHeight: 480,
-      zIndex: 11,
+      zIndex: 10,
       minimized: false,
       maximized: false,
       focused: true,
       props: {}
-    },
-    {
-      id: "win-init-ga",
-      appId: "genome-analyzer",
-      title: "Genome Analyzer // SMP-1827",
-      x: 120,
-      y: 90,
-      width: 860,
-      height: 560,
-      minWidth: 640,
-      minHeight: 420,
-      zIndex: 10,
-      minimized: false,
-      maximized: false,
-      focused: false,
-      props: { sampleId: "SMP-1827" }
     }
   ],
   activeWindowId: "win-init-db",
   highestZIndex: 10,
   launcherOpen: false,
-  activeSample: {
-    sampleId: "SMP-1827",
-    genomeId: "511145.12",
-    organism: "Escherichia coli",
-    qcStatus: "PASS",
-    totalBases: 5210341
-  },
+  // Hard Data Rule §1: No pre-loaded organism — activeSample is null until the user
+  // uploads a real FASTA or selects a sample from the Sample Vault.
+  activeSample: null,
   installedApps: [...NATIVE_APPS],
 
   toggleLauncher: () => set((state) => ({ launcherOpen: !state.launcherOpen })),

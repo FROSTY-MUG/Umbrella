@@ -26,7 +26,7 @@ from core.bio.fasta_parser import run_sequence_qc, compute_sha256
 from core.bio.alignment import call_variants_pairwise
 from core.bio.radiation_sim import simulate_radiation_damage
 from ml.features.extractor import extract_amr_features_from_findings
-from ml.registry.model_store import predict_resistance, list_registered_models
+from ml.registry.model_store import predict_resistance, list_registered_models, ModelNotTrainedError
 from services.vella.orchestrator import vella
 from services.api.forge_service import forge_compiler
 from services.api.auth_router import router as auth_router
@@ -56,109 +56,42 @@ app.include_router(competitor_router, prefix="/api")
 app.include_router(stress_router, prefix="/api")
 app.include_router(amr_pipeline_router, prefix="/api")
 
-# Startup hook to initialize DB and seed initial benchmark reference isolates
+# ============================================================
+# STARTUP -- Check real data availability, never seed synthetic
+# ============================================================
 @app.on_event("startup")
 def on_startup():
     init_db()
-    seed_benchmark_data()
+    _report_data_status()
 
-def seed_benchmark_data():
-    """Seeds verified initial bacterial benchmark isolates if database is empty."""
+
+def _report_data_status():
+    """
+    Reports real data availability at startup.
+    Does NOT create synthetic data. Does NOT invent organisms.
+    """
+    organizer_dir = ROOT_DIR / "data" / "raw" / "organizer"
+    bvbrc_genome_dir = ROOT_DIR / "data" / "raw" / "bvbrc" / "genomes"
+    models_dir = ROOT_DIR / "data" / "models"
+
+    organizer_files = sorted(organizer_dir.glob("**/*")) if organizer_dir.exists() else []
+    bvbrc_fastas = sorted(bvbrc_genome_dir.glob("**/*.fna")) if bvbrc_genome_dir.exists() else []
+    model_dirs = [d for d in models_dir.glob("**/*") if (d / "manifest.json").exists()] if models_dir.exists() else []
+
     db = SessionLocal()
     try:
-        if db.query(models.Sample).count() == 0:
-            print("[Umbrella API] Seeding reference benchmark bacterial isolates...")
-            samples_dir = ROOT_DIR / "data" / "raw" / "genomes"
-            samples_dir.mkdir(parents=True, exist_ok=True)
-
-            # Sample 1: Escherichia coli (Multi-drug resistant isolate with blaNDM and gyrA_D87G)
-            seq_1 = (
-                "ATGCGATCGATCGATCGATCGATCGATCGAACCGTTAGGCTAGCTAGCTAGCTAAGCG" * 80 +
-                "GGCATTTACCGTAAACCCGGTTAGCGATCGATCGTAGCTAGCTAGCTAACCGTTAAGCT" * 60 +
-                "TTGACCTGAGGCTTAAAGCTCGATCGATCGTACGTAGCTAGCTAACGTTAGCTAGCTAG" * 60
-            )
-            fasta_path_1 = samples_dir / "sample_1827.fna"
-            fasta_path_1.write_text(f">contig_0001 Escherichia coli isolate 1827\n{seq_1}\n")
-            qc_1 = run_sequence_qc(fasta_path_1, sample_id="SMP-1827")
-
-            s1 = models.Sample(
-                sample_id="SMP-1827",
-                genome_id="511145.12",
-                organism="Escherichia coli",
-                taxon_id=562,
-                assembly_accession="GCF_000005845.2",
-                sequence_uri=str(fasta_path_1),
-                sequence_sha256=qc_1["sha256"],
-                qc=qc_1,
-                sample_metadata={"strain": "CFT073-R", "source": "BV-BRC / Clinical Isolate"}
-            )
-            db.add(s1)
-
-            # AMR findings for 1827
-            findings_1 = [
-                models.AmrFinding(sample_id="SMP-1827", genome_id="511145.12", gene="blaNDM-1", class_name="Carbapenem", method="AMRFinderPlus", identity_percent=100.0, coverage_percent=100.0),
-                models.AmrFinding(sample_id="SMP-1827", genome_id="511145.12", mutation="gyrA_D87G", class_name="Fluoroquinolone", method="AMRFinderPlus", identity_percent=100.0, coverage_percent=100.0),
-                models.AmrFinding(sample_id="SMP-1827", genome_id="511145.12", gene="tet(M)", class_name="Tetracycline", method="AMRFinderPlus", identity_percent=99.2, coverage_percent=100.0),
-                models.AmrFinding(sample_id="SMP-1827", genome_id="511145.12", gene="erm(B)", class_name="Macrolide", method="AMRFinderPlus", identity_percent=98.8, coverage_percent=99.5),
-                models.AmrFinding(sample_id="SMP-1827", genome_id="511145.12", gene="aac(3)-IIa", class_name="Aminoglycoside", method="AMRFinderPlus", identity_percent=99.5, coverage_percent=100.0)
-            ]
-            db.add_all(findings_1)
-
-            # Lab susceptibility ground truth for 1827
-            lab_rows = [
-                models.AmrLab(record_id="LAB-1827-CIP", genome_id="511145.12", antibiotic="Ciprofloxacin", evidence="Phenotype", measurement=">4.0", measurement_sign=">", measurement_value=4.0, measurement_unit="ug/ml", resistant_phenotype="Resistant", testing_standard="CLSI", testing_standard_year=2024, laboratory_typing_method="Broth microdilution"),
-                models.AmrLab(record_id="LAB-1827-MEM", genome_id="511145.12", antibiotic="Meropenem", evidence="Phenotype", measurement=">16.0", measurement_sign=">", measurement_value=16.0, measurement_unit="ug/ml", resistant_phenotype="Resistant", testing_standard="CLSI", testing_standard_year=2024, laboratory_typing_method="Broth microdilution"),
-                models.AmrLab(record_id="LAB-1827-TET", genome_id="511145.12", antibiotic="Tetracycline", evidence="Phenotype", measurement="32.0", measurement_sign="=", measurement_value=32.0, measurement_unit="ug/ml", resistant_phenotype="Resistant", testing_standard="CLSI", testing_standard_year=2024, laboratory_typing_method="Broth microdilution")
-            ]
-            db.add_all(lab_rows)
-
-            # Sample 2: Klebsiella pneumoniae (Carbapenem-resistant)
-            seq_2 = (
-                "CGTAAGCTAGCTAAGCGATCGATCGATCGATCGATCGAACCGTTAGGCTAGCTAGCTA" * 80 +
-                "GGCATTTACCGTAAACCCGGTTAGCGATCGATCGTAGCTAGCTAGCTAACCGTTAAGCT" * 60
-            )
-            fasta_path_2 = samples_dir / "sample_1828.fna"
-            fasta_path_2.write_text(f">contig_0001 Klebsiella pneumoniae isolate 1828\n{seq_2}\n")
-            qc_2 = run_sequence_qc(fasta_path_2, sample_id="SMP-1828")
-
-            s2 = models.Sample(
-                sample_id="SMP-1828",
-                genome_id="573.14920",
-                organism="Klebsiella pneumoniae",
-                taxon_id=573,
-                assembly_accession="GCF_000240185.1",
-                sequence_uri=str(fasta_path_2),
-                sequence_sha256=qc_2["sha256"],
-                qc=qc_2,
-                sample_metadata={"strain": "KP-ST258", "source": "BV-BRC"}
-            )
-            db.add(s2)
-            db.add(models.AmrFinding(sample_id="SMP-1828", genome_id="573.14920", gene="blaKPC-2", class_name="Carbapenem", method="AMRFinderPlus", identity_percent=100.0, coverage_percent=100.0))
-
-            # Sample 3: Staphylococcus aureus (Susceptible reference)
-            seq_3 = (
-                "TTGACCTGAGGCTTAAAGCTCGATCGATCGTACGTAGCTAGCTAACGTTAGCTAGCTAG" * 80 +
-                "ATGCGATCGATCGATCGATCGATCGATCGAACCGTTAGGCTAGCTAGCTAGCTAAGCG" * 60
-            )
-            fasta_path_3 = samples_dir / "sample_1829.fna"
-            fasta_path_3.write_text(f">contig_0001 Staphylococcus aureus isolate 1829\n{seq_3}\n")
-            qc_3 = run_sequence_qc(fasta_path_3, sample_id="SMP-1829")
-
-            s3 = models.Sample(
-                sample_id="SMP-1829",
-                genome_id="1280.11",
-                organism="Staphylococcus aureus",
-                taxon_id=1280,
-                assembly_accession="GCF_000013425.1",
-                sequence_uri=str(fasta_path_3),
-                sequence_sha256=qc_3["sha256"],
-                qc=qc_3,
-                sample_metadata={"strain": "NCTC 8325", "source": "Reference Collection"}
-            )
-            db.add(s3)
-
-            db.commit()
-            print("[Umbrella API] Seeded 3 benchmark reference isolates.")
+        sample_count = db.query(models.Sample).count()
+        print("[Umbrella OS] ===========================================")
+        print("[Umbrella OS] STARTUP DATA STATUS")
+        print(f"[Umbrella OS]   Organizer data:   {len(organizer_files)} files in data/raw/organizer/")
+        print(f"[Umbrella OS]   BV-BRC genomes:   {len(bvbrc_fastas)} FASTA files acquired")
+        print(f"[Umbrella OS]   DB samples:        {sample_count} samples in database")
+        print(f"[Umbrella OS]   Registered models: {len(model_dirs)} trained model versions")
+        if sample_count == 0:
+            print("[Umbrella OS]   [ACTION NEEDED] No samples in database.")
+            print("[Umbrella OS]   Run: python scripts/acquire_bvbrc.py")
+            print("[Umbrella OS]   Or:  POST /api/samples/upload with a real FASTA file")
+        print("[Umbrella OS] ===========================================")
     finally:
         db.close()
 
@@ -233,7 +166,7 @@ def get_sample(sample_id: str, db: Session = Depends(get_db)):
 
 @app.post("/api/samples/upload", response_model=schemas.SampleResponse)
 async def upload_sample(
-    organism: str = Form("Escherichia coli"),
+    organism: str = Form(..., description="Organism name - must be provided explicitly, no default"),
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
@@ -351,9 +284,14 @@ def compare_mutations(req: schemas.MutationCompareRequest, db: Session = Depends
                 qry_seq = first_c["sequence"][:15000]
 
     if not ref_seq or not qry_seq:
-        # Provide representative sequence comparison for demonstration if no raw sequences provided
-        ref_seq = "ATGCGATCGATCGATCGATCGATCGATCGAACCGTTAGGCTAGCTAGCTAGCTAAGCGGGCATTTACCGTAAACCCGGTTAGCG" * 20
-        qry_seq = "ATGCGATGGATCGATCGATCGATCGATCGAACCGTTAGGCTTGCTAGCTAGCTAAGCGGGCATTTACCGGAAACCCGGTTAGCG" * 20
+        raise HTTPException(
+            status_code=422,
+            detail=(
+                "Cannot compare: reference and query sequences are both required. "
+                "Provide reference_seq + query_seq directly, or reference_sample_id + query_sample_id "
+                "pointing to samples with sequence files in the database."
+            )
+        )
 
     res = call_variants_pairwise(ref_seq, qry_seq)
     return schemas.MutationCompareResponse(**res)
@@ -422,41 +360,32 @@ def run_radiation_simulation(req: schemas.RadiationSimRequest):
     )
     return schemas.RadiationSimResponse(**res)
 
-# --- TAXONOMY ATLAS ---
+# --- TAXONOMY ATLAS (derived from real DB records, never fabricated) ---
 @app.get("/api/atlas/organisms")
-def get_pathogen_atlas():
-    """Returns browsable taxonomy hierarchy across Bacteria, Viruses, and Fungi."""
+def get_pathogen_atlas(db: Session = Depends(get_db)):
+    """Returns organisms and counts derived from the real sample database.
+    Never returns fabricated genome counts.
+    """
+    rows = db.query(
+        models.Sample.organism,
+        models.Sample.taxon_id
+    ).all()
+
+    org_counts: Dict[str, Dict[str, Any]] = {}
+    for row in rows:
+        name = row.organism or "Unknown"
+        if name not in org_counts:
+            org_counts[name] = {"name": name, "taxon_id": row.taxon_id, "genomes": 0}
+        org_counts[name]["genomes"] += 1
+
+    organisms = sorted(org_counts.values(), key=lambda x: x["genomes"], reverse=True)
+
     return {
-        "categories": [
-            {
-                "id": "bacteria",
-                "name": "Bacteria (Primary Focus)",
-                "count": 15420,
-                "organisms": [
-                    {"name": "Escherichia coli", "taxon_id": 562, "genomes": 5120, "amr_profile": "High density (NDM, TEM, CTX-M)"},
-                    {"name": "Klebsiella pneumoniae", "taxon_id": 573, "genomes": 4350, "amr_profile": "Carbapenem-resistant (KPC, OXA)"},
-                    {"name": "Staphylococcus aureus", "taxon_id": 1280, "genomes": 3800, "amr_profile": "MRSA (mecA)"},
-                    {"name": "Pseudomonas aeruginosa", "taxon_id": 287, "genomes": 2150, "amr_profile": "Efflux pumps & metallo-beta-lactamases"}
-                ]
-            },
-            {
-                "id": "viruses",
-                "name": "Viruses (Extensible)",
-                "count": 4200,
-                "organisms": [
-                    {"name": "SARS-CoV-2", "taxon_id": 2697049, "genomes": 2800, "amr_profile": "Antiviral protease variant markers"},
-                    {"name": "Influenza A", "taxon_id": 11320, "genomes": 1400, "amr_profile": "Neuraminidase inhibitor mutations"}
-                ]
-            },
-            {
-                "id": "fungi",
-                "name": "Fungi (Extensible)",
-                "count": 850,
-                "organisms": [
-                    {"name": "Candida auris", "taxon_id": 498019, "genomes": 850, "amr_profile": "Echinocandin & triazole resistance (FKS1, ERG11)"}
-                ]
-            }
-        ]
+        "source": "database",
+        "total_organisms": len(organisms),
+        "total_genomes": sum(o["genomes"] for o in organisms),
+        "organisms": organisms,
+        "note": "All counts derived from real ingested samples. Run scripts/acquire_bvbrc.py to expand."
     }
 
 # --- VELLA AI ORCHESTRATOR ---
