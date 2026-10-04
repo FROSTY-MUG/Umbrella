@@ -33,6 +33,14 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     OPENROUTER_API_KEY: str = os.getenv("OPENROUTER_API_KEY", "")
 
+    # Authentication & Security
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "umbrella_super_secure_jwt_secret_2026_biotech")
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRATION_HOURS: int = 24
+    GOOGLE_CLIENT_ID: str = os.getenv("GOOGLE_CLIENT_ID", "")
+    GOOGLE_CLIENT_SECRET: str = os.getenv("GOOGLE_CLIENT_SECRET", "")
+    AUTH_ALLOW_DEV_MOCK: bool = os.getenv("AUTH_ALLOW_DEV_MOCK", "true").lower() == "true"
+
     # Storage Paths
     DATA_ROOT: Path = ROOT_DIR / "data"
     MODELS_ROOT: Path = ROOT_DIR / "data" / "models"

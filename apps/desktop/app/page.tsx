@@ -22,14 +22,26 @@ import { AnalysisStudioApp } from "../apps/AnalysisStudioApp";
 import { BioTerminalApp } from "../apps/BioTerminalApp";
 import { ReportStudioApp } from "../apps/ReportStudioApp";
 import { UmbrellaForgeApp } from "../apps/UmbrellaForgeApp";
+import { GeneratedForgeAppView } from "../apps/GeneratedForgeAppView";
 import { VellaApp } from "../apps/VellaApp";
 import { SystemMonitorApp } from "../apps/SystemMonitorApp";
-import { GeneratedForgeAppView } from "../apps/GeneratedForgeAppView";
 import { BenchmarkDnaApp } from "../apps/BenchmarkDnaApp";
+import { GenomeCompetitorApp } from "../apps/GenomeCompetitorApp";
+import { StressLabApp } from "../apps/StressLabApp";
+import { BiotechLoginModal } from "../components/BiotechLoginModal";
 
 export default function DesktopPage() {
   const { windows, installedApps, closeWindow, activeWindowId, setLauncherOpen, toggleLauncher } =
     useDesktopStore();
+  const [loginModalOpen, setLoginModalOpen] = React.useState(false);
+  const [currentUser, setCurrentUser] = React.useState<any>(null);
+
+  // Global event listener for clearance login
+  useEffect(() => {
+    const handleOpenLogin = () => setLoginModalOpen(true);
+    window.addEventListener("umbrella-open-login", handleOpenLogin);
+    return () => window.removeEventListener("umbrella-open-login", handleOpenLogin);
+  }, []);
 
   // Keyboard shortcut contracts
   useEffect(() => {
@@ -52,6 +64,10 @@ export default function DesktopPage() {
 
   const renderAppContent = (win: any) => {
     switch (win.appId) {
+      case "genome-competitor":
+        return <GenomeCompetitorApp />;
+      case "stress-lab":
+        return <StressLabApp />;
       case "benchmark-dna":
         return <BenchmarkDnaApp />;
       case "genome-analyzer":
@@ -131,6 +147,16 @@ export default function DesktopPage() {
 
       {/* Operating System Taskbar */}
       <Taskbar />
+
+      {/* Biotech Google Auth Clearance Modal */}
+      <BiotechLoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          setLoginModalOpen(false);
+        }}
+      />
     </main>
   );
 }

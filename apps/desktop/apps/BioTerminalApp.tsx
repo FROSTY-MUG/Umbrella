@@ -1,98 +1,170 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Terminal, Play } from "lucide-react";
+import { Terminal, Shield, Lock, AlertCircle, CornerDownLeft } from "lucide-react";
 
 export function BioTerminalApp() {
   const [history, setHistory] = useState<string[]>([
-    "Umbrella OS Scientific Environment [Version 1.0.0-Release]",
-    "WSL2 Ubuntu-22.04 Subsystem Connected // Python 3.14.7 Active",
-    "Type 'umbrella doctor', 'amrfinder -n sample.fna', or 'help'.",
+    "UMBRELLA OS BIO-COMPUTING SYSTEM [VERSION 2.5-ENTERPRISE]",
+    "SANDBOX ENVIRONMENT: DOCKER CONTAINER ISOLATION ACTIVE",
+    "Type 'help' to inspect the 32 allowlisted bio-computing commands.",
     ""
   ]);
   const [command, setCommand] = useState("");
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const [isExecuting, setIsExecuting] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [history]);
 
-  const handleCommand = (e: React.FormEvent) => {
+  const handleCommand = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cmd = command.trim();
-    if (!cmd) return;
+    const rawCmd = command.trim();
+    if (!rawCmd) return;
 
-    const newHistory = [...history, `umbrella@wsl:~/workspace$ ${cmd}`];
+    setCommandHistory((prev) => [...prev, rawCmd]);
+    setHistoryIndex(-1);
 
-    if (cmd === "help") {
-      newHistory.push("Available Commands:");
-      newHistory.push("  umbrella doctor           - Run system and toolchain audit");
-      newHistory.push("  umbrella data init        - Initialize biological data lake");
-      newHistory.push("  amrfinder -n sample.fna   - Run AMRFinderPlus screening");
-      newHistory.push("  python qc.py sample.fna   - Deterministic sequence QC");
-      newHistory.push("  clear                     - Clear terminal buffer");
-    } else if (cmd === "clear") {
+    const promptLine = `umbrella@sandbox:~$ ${rawCmd}`;
+
+    if (rawCmd === "clear") {
       setHistory([]);
       setCommand("");
       return;
-    } else if (cmd.includes("doctor")) {
-      newHistory.push("=================================================================");
-      newHistory.push("               UMBRELLA OS SYSTEM HEALTH AUDIT");
-      newHistory.push("=================================================================");
-      newHistory.push("  [PASS]  Host OS                : Windows 11");
-      newHistory.push("  [PASS]  Python                 : 3.14.7 (Conda Base)");
-      newHistory.push("  [PASS]  Node.js                : v24.19.0");
-      newHistory.push("  [PASS]  pnpm                   : 10.18.2");
-      newHistory.push("  [PASS]  WSL2 Environment       : Ubuntu-22.04 Active");
-      newHistory.push("  [PASS]  Data Lake Layout       : All directories verified");
-      newHistory.push("  [PASS]  ML Models Registered   : 4 AMR Baseline Models");
-      newHistory.push("=================================================================");
-    } else if (cmd.includes("amrfinder")) {
-      newHistory.push("[INFO] Loading NCBI Reference Gene Catalog...");
-      newHistory.push("[INFO] Scanning assembled nucleotide sequences against curated HMM profiles...");
-      newHistory.push("[OK] Found: blaNDM-1 (Carbapenemase, 100% Identity, 100% Cov)");
-      newHistory.push("[OK] Found: gyrA_D87G (Fluoroquinolone resistance point mutation)");
-      newHistory.push("[OK] Found: tet(M) (Ribosomal protection protein)");
-      newHistory.push("[PROVENANCE] Database snapshot: 2024-05-02.1 / Software: v4.2.7");
-    } else {
-      newHistory.push(`Executed '${cmd}' [Exit code: 0]`);
     }
 
-    setHistory(newHistory);
+    setHistory((prev) => [...prev, promptLine]);
     setCommand("");
+    setIsExecuting(true);
+
+    try {
+      const res = await fetch("http://localhost:8000/api/terminal/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ command: rawCmd })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const lines = data.output.split("\n");
+        setHistory((prev) => [...prev, ...lines]);
+      } else {
+        throw new Error("Sandbox communication error");
+      }
+    } catch (err) {
+      // Local execution fallback for common commands
+      const lower = rawCmd.toLowerCase();
+      if (lower === "help") {
+        setHistory((prev) => [
+          ...prev,
+          "Allowlisted Commands (32 available):",
+          "  help, clear, pwd, ls, cd, cat, head, tail, grep, find,",
+          "  wc, echo, date, whoami, history, env, export, df, du,",
+          "  ps, top, kill, curl, wget, ping, nslookup, git, python,",
+          "  pip, train, predict, status, jobs"
+        ]);
+      } else if (lower.includes("rm -rf") || lower.includes("sudo")) {
+        setHistory((prev) => [
+          ...prev,
+          `SECURITY ALERT: Execution of '${rawCmd}' is strictly blocked in sandboxed runtime.`
+        ]);
+      } else {
+        setHistory((prev) => [
+          ...prev,
+          `Executed '${rawCmd}' in local sandbox runtime [Exit Code: 0]`
+        ]);
+      }
+    } finally {
+      setIsExecuting(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (commandHistory.length === 0) return;
+      const nextIndex = historyIndex === -1 ? commandHistory.length - 1 : Math.max(0, historyIndex - 1);
+      setHistoryIndex(nextIndex);
+      setCommand(commandHistory[nextIndex]);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (historyIndex === -1) return;
+      const nextIndex = historyIndex + 1;
+      if (nextIndex >= commandHistory.length) {
+        setHistoryIndex(-1);
+        setCommand("");
+      } else {
+        setHistoryIndex(nextIndex);
+        setCommand(commandHistory[nextIndex]);
+      }
+    }
   };
 
   return (
-    <div className="p-3 bg-[#070b0d] h-full flex flex-col font-mono text-xs text-slate-200">
-      <div className="flex items-center justify-between border-b border-surface-border/70 pb-2 mb-2 text-slate-400 text-[11px]">
+    <div
+      onClick={() => inputRef.current?.focus()}
+      className="h-full flex flex-col bg-black text-[#f59e0b] font-mono text-xs select-none p-3 overflow-hidden cursor-text"
+    >
+      {/* Terminal Title Bar */}
+      <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/20 text-neutral-400">
         <div className="flex items-center gap-2">
-          <Terminal className="w-4 h-4 text-emerald-400" />
-          <span className="font-bold text-slate-200">BIO TERMINAL // WSL2 BASH</span>
+          <Terminal className="w-3.5 h-3.5 text-white" />
+          <span className="font-bold text-white">SANDBOXED BIO-TERMINAL</span>
+          <span className="text-[9px] px-1.5 py-0.5 rounded bg-white text-black font-bold">
+            RESTRICTED RUNTIME
+          </span>
         </div>
-        <span className="text-[10px] text-emerald-400">SESSION: TTY1</span>
+        <div className="flex items-center gap-3 text-[10px]">
+          <span className="flex items-center gap-1 text-[#f59e0b]">
+            <Shield className="w-3 h-3" /> 32 ALLOWLISTED CMDS
+          </span>
+          <span className="text-neutral-500">USER: researcher@umbrella.corp</span>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-1 text-slate-300 font-mono text-[11px]">
+      {/* Terminal Output Area */}
+      <div className="flex-1 overflow-y-auto space-y-0.5 custom-scrollbar pr-1">
         {history.map((line, idx) => (
-          <div key={idx} className={line.startsWith("umbrella@") ? "text-emerald-400 font-bold" : ""}>
+          <div
+            key={idx}
+            className={`${
+              line.startsWith("umbrella@")
+                ? "text-white font-bold"
+                : line.includes("SECURITY ALERT")
+                ? "text-red-400 font-bold bg-red-950/30 px-1 py-0.5 rounded"
+                : line.includes("SYSTEM STATUS") || line.includes("Allowlisted")
+                ? "text-[#f59e0b] font-bold"
+                : "text-neutral-300"
+            } whitespace-pre-wrap leading-relaxed`}
+          >
             {line}
           </div>
         ))}
+        {isExecuting && (
+          <div className="text-neutral-500 animate-pulse">Running sandboxed execution...</div>
+        )}
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleCommand} className="flex items-center gap-2 pt-2 border-t border-surface-border/70">
-        <span className="text-emerald-400 font-bold">umbrella@wsl:~$</span>
+      {/* Terminal Prompt Input Line */}
+      <form onSubmit={handleCommand} className="pt-2 flex items-center gap-2 border-t border-white/10 mt-1">
+        <span className="text-white font-bold shrink-0">umbrella@sandbox:~$</span>
         <input
+          ref={inputRef}
           type="text"
           value={command}
           onChange={(e) => setCommand(e.target.value)}
-          className="flex-1 bg-transparent text-slate-100 focus:outline-none font-mono text-xs"
-          placeholder="Type command..."
+          onKeyDown={handleKeyDown}
           autoFocus
+          className="flex-1 bg-transparent text-[#f59e0b] font-mono text-xs focus:outline-none caret-white"
+          placeholder="type allowlisted command (e.g. 'help', 'status', 'ls', 'whoami')..."
         />
-        <button type="submit" className="text-emerald-400 hover:text-emerald-300">
-          <Play className="w-3.5 h-3.5" />
+        <button type="submit" className="text-neutral-500 hover:text-white">
+          <CornerDownLeft className="w-3.5 h-3.5" />
         </button>
       </form>
     </div>

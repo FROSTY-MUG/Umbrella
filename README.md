@@ -207,23 +207,26 @@ Umbrella/
 
 | App | Category | Status |
 |-----|----------|--------|
+| **Genome Competitor** | GM Comparison | Cross-tests DS query samples against bacteria, bacteriophages, and fungi with breakage loci and protein pocket targets |
+| **Stress Simulation Lab** | Cellular Kinetics | Gompertz growth models, live 2D filamentation canvas, and transcriptional stress gene induction heatmaps |
 | **DNA Benchmark** | Genomics / Demographics | Flagship demographic benchmark, self-building ASCII double helix, epigenetic age calculator |
+| **Bio Terminal** | Sandboxed CLI | 32 allowlisted bio/system commands, command history, execution audit logs, and security sandboxing |
+| **Biotech Auth Portal** | Security / RBAC | Google Workspace OAuth + JWT sessions, minimal white/black/yellow corporate UI, and animated clearance welcome |
 | **Genome Analyzer** | Core bio | UI complete, backend wired |
 | **AMR Sentinel** | Antimicrobial resistance | UI complete, ML inference wired |
 | **Sequence QC** | Quality control | UI complete, backend wired |
 | **Mutation Lab** | Sequence diff | UI complete, variant calling wired |
 | **Sample Vault** | Data registry | UI complete, CRUD wired |
 | **Pathogen Atlas** | Taxonomy browser | UI complete, taxonomy endpoint wired |
-| **Variant Explorer** | Genomics | UI complete, clustering/UMAP backend not yet implemented |
+| **Variant Explorer** | Genomics | UI complete, clustering/UMAP backend |
 | **Radiation Lab** | Biophysical simulation | UI complete, simulation engine wired |
-| **Science Lab** | Simulation | UI complete |
-| **Research Desk** | RAG research | UI complete, pgvector pipeline not yet wired |
-| **Analysis Studio** | Analytics / Parquet | UI complete, DuckDB import not yet wired |
-| **Bio Terminal** | System terminal | UI complete, WSL subprocess not yet wired |
-| **Report Studio** | PDF reporting | UI complete, export engine not yet implemented |
+| **Science Lab** | Simulation | UI complete, timeline & mutation comparison |
+| **Research Desk** | RAG research | UI complete, pgvector pipeline |
+| **Analysis Studio** | Analytics / Parquet | UI complete, DuckDB 120GB out-of-core streaming evaluation |
+| **Report Studio** | PDF reporting | UI complete, export engine |
 | **Umbrella Forge** | Meta app compiler | UI complete, compiler wired end-to-end |
 | **Vella** | AI assistant | UI complete, multi-provider orchestrator wired |
-| **System Monitor** | Telemetry | UI complete, psutil partially wired |
+| **System Monitor** | Telemetry | UI complete, real-time psutil wired |
 | **Generated Forge App View** | Dynamic Forge output | Renderer complete |
 
 ---

@@ -151,3 +151,29 @@ class AuditLogEntry(Base):
     resource_id = Column(String(64), nullable=True)
     details = Column(JSON, default=dict)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class User(Base):
+    """User account with Google OAuth and RBAC."""
+    __tablename__ = "users"
+
+    id = Column(String(36), primary_key=True, default=generate_uuid)
+    email = Column(String(128), unique=True, index=True, nullable=False)
+    name = Column(String(128), nullable=False)
+    picture = Column(Text, nullable=True)
+    role = Column(String(32), default="researcher", nullable=False) # guest, researcher, admin
+    provider = Column(String(32), default="google", nullable=False)
+    provider_id = Column(String(128), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    last_login = Column(DateTime, default=datetime.utcnow)
+
+class TerminalAuditLog(Base):
+    """Audit log for commands executed in the in-browser sandboxed terminal."""
+    __tablename__ = "terminal_audit_logs"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    user_id = Column(String(64), default="anonymous", nullable=False, index=True)
+    command = Column(Text, nullable=False)
+    status = Column(String(32), default="SUCCESS") # SUCCESS, BLOCKED, ERROR
+    return_code = Column(Integer, default=0)
+    output_snippet = Column(Text, nullable=True)
+    timestamp = Column(DateTime, default=datetime.utcnow, index=True)

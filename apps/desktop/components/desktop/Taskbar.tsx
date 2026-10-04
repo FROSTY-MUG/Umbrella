@@ -86,8 +86,22 @@ export function Taskbar() {
         </div>
       </div>
 
-      {/* Right: Vella, System Tray & Clock */}
+      {/* Right: Clearance, Vella, System Tray & Clock */}
       <div className="flex items-center gap-3">
+        <Tooltip content="Biotech Security Clearance" explanation="Google OAuth 2.0 corporate personnel login">
+          <button
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("umbrella-open-login"));
+              }
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#f59e0b]/20 border border-[#f59e0b]/60 text-xs font-mono text-[#f59e0b] hover:bg-[#f59e0b]/30 transition-colors font-bold shadow-[0_0_8px_rgba(245,158,11,0.25)]"
+          >
+            <Shield className="w-3.5 h-3.5" />
+            <span>CLEARANCE</span>
+          </button>
+        </Tooltip>
+
         <Tooltip content="Launch Vella AI" explanation="System-wide natural-language scientific orchestrator">
           <button
             onClick={() => openWindow("vella")}
