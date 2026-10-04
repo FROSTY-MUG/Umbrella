@@ -15,12 +15,12 @@ class Settings(BaseSettings):
     VERSION: str = "1.0.0"
     API_PREFIX: str = "/api"
 
-    # Database
+    # Database - fallback to /tmp when running in a container without a writable data dir
     DATABASE_URL: str = os.getenv(
         "DATABASE_URL",
-        f"sqlite:///{ROOT_DIR / 'data' / 'umbrella_local.db'}"
+        f"sqlite:////tmp/umbrella_local.db"
     )
-    SQLITE_FALLBACK: str = str(ROOT_DIR / "data" / "umbrella_local.db")
+    SQLITE_FALLBACK: str = "/tmp/umbrella_local.db"
 
     # Redis & MinIO
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
