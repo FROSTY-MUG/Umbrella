@@ -76,7 +76,7 @@ For detailed guides on spinning up the infrastructure, refer to our comprehensiv
 - `docs/DEPLOYMENT.md` - Cloud architecture mapping for Vercel, Render, and S3.
 
 ## Live Production Environments
-- **Frontend OS**: [https://umbrella-ck3jxezfv-aryan-aroras-projects-685553cc.vercel.app](https://umbrella-ck3jxezfv-aryan-aroras-projects-685553cc.vercel.app)
+- **Frontend OS**: [https://umbrella-os.vercel.app](https://umbrella-os.vercel.app)
 - **Backend API**: *(Deploy via Render Dashboard using Github integration)*
 
 ## Scientific Limitations
