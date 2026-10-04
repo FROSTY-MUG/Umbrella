@@ -6,7 +6,7 @@ import { useDesktopStore } from "../lib/store";
 
 export function ReportStudioApp({ sampleId }: { sampleId?: string }) {
   const { activeSample } = useDesktopStore();
-  const currentSampleId = sampleId || activeSample?.sampleId || "SMP-1827";
+  const currentSampleId = sampleId || activeSample?.sampleId || null;
   const [downloaded, setDownloaded] = useState<string | null>(null);
 
   const handleExport = (format: string) => {

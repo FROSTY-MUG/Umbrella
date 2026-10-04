@@ -10,22 +10,22 @@ export function ResearchDeskApp() {
     {
       title: "CORE RESEARCH QUESTIONS",
       items: [
-        "Which specific point mutations in gyrA/parC drive high-level ciprofloxacin resistance in clinical isolate SMP-1827?",
+        "Which specific point mutations in gyrA/parC drive high-level ciprofloxacin resistance in the active sample?",
         "Does blaNDM-1 co-occur with 16S rRNA methyltransferases (armA/rmtB) in the current BV-BRC cohort?"
       ]
     },
     {
       title: "WORKING HYPOTHESES",
       items: [
-        "Isolate SMP-1827 demonstrates multi-drug resistance mediated by dual plasmid-borne beta-lactamases and quinolone target mutation.",
+        "The active isolate demonstrates multi-drug resistance mediated by dual plasmid-borne beta-lactamases and quinolone target mutation.",
         "Calibrated logistic regression baseline maintains >0.90 AUROC on stratified holdout test partitions."
       ]
     },
     {
       title: "ACTIVE ISOLATES & BENCHMARKS",
       items: [
-        "SMP-1827 (Escherichia coli, 511145.12) - Broth microdilution verified",
-        "SMP-1828 (Klebsiella pneumoniae, 573.14920) - Carbapenemase positive"
+        "Select an isolate from the Sample Vault to populate this section",
+        "Load a reference genome to begin comparative analysis"
       ]
     },
     {

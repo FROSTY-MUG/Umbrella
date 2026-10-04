@@ -6,7 +6,7 @@ import { GitCompare, Dna, ExternalLink, ArrowRight } from "lucide-react";
 
 export function MutationLabApp({ querySampleId }: { querySampleId?: string }) {
   const { activeSample, openWindow } = useDesktopStore();
-  const currentQueryId = querySampleId || activeSample?.sampleId || "SMP-1827";
+  const currentQueryId = querySampleId || activeSample?.sampleId || null;
 
   const [refSampleId, setRefSampleId] = useState("SMP-1829"); // S. aureus or reference
   const [data, setData] = useState<any>(null);

@@ -7,7 +7,7 @@ import { Upload, CheckCircle2, AlertTriangle, Database, Dna, FileText } from "lu
 export function SampleVaultApp() {
   const { activeSample, setActiveSample, openWindow } = useDesktopStore();
   const [samples, setSamples] = useState<any[]>([]);
-  const [selectedId, setSelectedId] = useState<string>(activeSample?.sampleId || "SMP-1827");
+  const [selectedId, setSelectedId] = useState<string | null>(activeSample?.sampleId || null);
   const [uploading, setUploading] = useState(false);
 
   const fetchSamples = () => {

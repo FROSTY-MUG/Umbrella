@@ -7,22 +7,16 @@ import { useDesktopStore } from "../lib/store";
 export function VariantExplorerApp() {
   const { openWindow } = useDesktopStore();
   const [selectedNode, setSelectedNode] = useState<any>({
-    id: "M2",
-    label: "gyrA_D87G",
-    type: "Mutation",
-    samples: ["SMP-1827", "SMP-1828"],
-    gene: "gyrA",
+    id: null,
+    label: "No Selection",
+    type: "None",
+    samples: [],
+    gene: "N/A",
     evidence: "Curated / Observed in 184 cohort genomes",
     drugClass: "Fluoroquinolone"
   });
 
-  const nodes = [
-    { id: "S1", label: "SMP-1827", type: "Sample", x: 25, y: 35 },
-    { id: "S2", label: "SMP-1828", type: "Sample", x: 45, y: 20 },
-    { id: "S3", label: "SMP-1829", type: "Sample", x: 75, y: 30 },
-    { id: "M1", label: "blaNDM-1", type: "Gene", x: 35, y: 65 },
-    { id: "M2", label: "gyrA_D87G", type: "Mutation", x: 55, y: 70 },
-    { id: "G1", label: "tet(M)", type: "Gene", x: 70, y: 60 }
+    // Nodes will be populated from active graph context
   ];
 
   return (
@@ -59,7 +53,7 @@ export function VariantExplorerApp() {
                     id: node.id,
                     label: node.label,
                     type: node.type,
-                    samples: node.type === "Sample" ? [node.label] : ["SMP-1827", "SMP-1828"],
+                    samples: node.type === "Sample" ? [node.label] : [],
                     gene: node.type === "Mutation" ? "gyrA" : node.label,
                     evidence: "High-confidence laboratory evidence",
                     drugClass: "Multi-drug Resistance"

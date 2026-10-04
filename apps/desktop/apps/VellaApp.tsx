@@ -32,7 +32,7 @@ export function VellaApp() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           prompt: userText,
-          active_sample_id: activeSample?.sampleId || "SMP-1827"
+          active_sample_id: activeSample?.sampleId || null
         })
       });
 

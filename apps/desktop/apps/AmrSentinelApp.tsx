@@ -6,7 +6,7 @@ import { ShieldAlert, Info, HelpCircle, CheckCircle2, ChevronRight, Layers } fro
 
 export function AmrSentinelApp({ sampleId }: { sampleId?: string }) {
   const { activeSample, openWindow } = useDesktopStore();
-  const currentSampleId = sampleId || activeSample?.sampleId || "SMP-1827";
+  const currentSampleId = sampleId || activeSample?.sampleId || null;
 
   const [amrData, setAmrData] = useState<any>(null);
   const [selectedAntibiotic, setSelectedAntibiotic] = useState("Ciprofloxacin");
@@ -16,6 +16,7 @@ export function AmrSentinelApp({ sampleId }: { sampleId?: string }) {
 
   // Fetch AMR findings
   useEffect(() => {
+    if (!currentSampleId) { setAmrData(null); return; }
     fetch(`http://localhost:8000/api/amr/${currentSampleId}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => setAmrData(data))
@@ -24,6 +25,7 @@ export function AmrSentinelApp({ sampleId }: { sampleId?: string }) {
 
   // Fetch ML Prediction & Evidence Dossier
   useEffect(() => {
+    if (!currentSampleId) { setPrediction(null); setLoading(false); return; }
     setLoading(true);
     fetch("http://localhost:8000/api/predict", {
       method: "POST",
@@ -69,7 +71,7 @@ export function AmrSentinelApp({ sampleId }: { sampleId?: string }) {
         <div className="p-3 bg-surface border border-surface-border rounded">
           <div className="text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">
             <span>Detected Markers</span>
-            <span className="text-emerald-400 font-bold">{amrData?.detected_marker_count || 5}</span>
+            <span className="text-emerald-400 font-bold">{amrData?.detected_marker_count ?? "—"}</span>
           </div>
           <div className="flex flex-wrap gap-1">
             {amrData?.findings?.map((f: any, idx: number) => (
@@ -80,11 +82,9 @@ export function AmrSentinelApp({ sampleId }: { sampleId?: string }) {
                 {f.gene || f.mutation}
               </span>
             )) || (
-              <>
-                <span className="px-1.5 py-0.5 rounded bg-surface-secondary text-[10px] text-emerald-300">blaNDM-1</span>
-                <span className="px-1.5 py-0.5 rounded bg-surface-secondary text-[10px] text-amber-300">gyrA_D87G</span>
-                <span className="px-1.5 py-0.5 rounded bg-surface-secondary text-[10px] text-emerald-300">tet(M)</span>
-              </>
+              <div className="text-slate-500 text-[11px]">
+                {currentSampleId ? "Loading markers…" : "No sample loaded — select from Sample Vault"}
+              </div>
             )}
           </div>
         </div>
@@ -118,19 +118,23 @@ export function AmrSentinelApp({ sampleId }: { sampleId?: string }) {
 
           <div className="p-3 bg-surface-secondary border border-surface-border rounded flex items-center justify-between">
             <div>
-              <div className="text-xl font-bold text-red-400">
-                {prediction?.predicted_class || "Resistant"}
+              <div className={`text-xl font-bold ${prediction?.predicted_class === 'Susceptible' ? 'text-emerald-400' : prediction ? 'text-red-400' : 'text-slate-500'}`}>
+                {prediction?.predicted_class ?? (currentSampleId ? "Loading…" : "No sample")}
               </div>
               <div className="text-[11px] text-slate-400 mt-0.5">
-                Calibrated Probability: <span className="text-slate-100 font-bold">{(prediction?.calibrated_probability * 100 || 95.9).toFixed(1)}%</span>
+                Calibrated Probability: <span className="text-slate-100 font-bold">
+                  {prediction?.calibrated_probability != null
+                    ? `${(prediction.calibrated_probability * 100).toFixed(1)}%`
+                    : "—"}
+                </span>
               </div>
             </div>
             <div className="text-right">
               <span className="px-2 py-0.5 bg-emerald-950 border border-emerald-500 text-emerald-300 text-[10px] font-bold rounded">
-                CONFIDENCE: {prediction?.confidence_band || "HIGH"}
+                CONFIDENCE: {prediction?.confidence_band ?? "—"}
               </span>
               <div className="text-[10px] text-slate-400 mt-1">
-                Domain: {prediction?.ood_flag || "IN_DOMAIN"}
+                Domain: {prediction?.ood_flag ?? "—"}
               </div>
             </div>
           </div>
@@ -140,19 +144,19 @@ export function AmrSentinelApp({ sampleId }: { sampleId?: string }) {
             <div className="p-2 bg-surface-chrome border border-surface-border rounded">
               <div className="text-[9px] text-slate-500">ROC-AUC</div>
               <div className="text-xs font-bold text-emerald-400 mt-0.5">
-                {prediction?.metrics_summary?.roc_auc || 0.9064}
+                {prediction?.metrics_summary?.roc_auc ?? "—"}
               </div>
             </div>
             <div className="p-2 bg-surface-chrome border border-surface-border rounded">
               <div className="text-[9px] text-slate-500">PR-AUC</div>
               <div className="text-xs font-bold text-cyan-400 mt-0.5">
-                {prediction?.metrics_summary?.pr_auc || 0.8846}
+                {prediction?.metrics_summary?.pr_auc ?? "—"}
               </div>
             </div>
             <div className="p-2 bg-surface-chrome border border-surface-border rounded">
               <div className="text-[9px] text-slate-500">BRIER SCORE</div>
               <div className="text-xs font-bold text-slate-200 mt-0.5">
-                {prediction?.metrics_summary?.brier_score || 0.0948}
+                {prediction?.metrics_summary?.brier_score ?? "—"}
               </div>
             </div>
           </div>

@@ -6,7 +6,7 @@ import { Dna, ShieldAlert, CheckCircle, ArrowRight, Play, FileDown } from "lucid
 
 export function GenomeAnalyzerApp({ sampleId }: { sampleId?: string }) {
   const { activeSample, openWindow, setActiveSample } = useDesktopStore();
-  const currentSampleId = sampleId || activeSample?.sampleId || "SMP-1827";
+  const currentSampleId = sampleId || activeSample?.sampleId || null;
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -63,7 +63,7 @@ export function GenomeAnalyzerApp({ sampleId }: { sampleId?: string }) {
             QC {qc.status}
           </span>
           <span className="px-2 py-1 bg-surface-secondary border border-surface-border text-slate-300 rounded text-[11px]">
-            {data?.sample_id || "SMP-1827"}
+            {data?.sample_id || "No Sample Selected"}
           </span>
         </div>
       </div>
