@@ -56,6 +56,52 @@ app.include_router(competitor_router, prefix="/api")
 app.include_router(stress_router, prefix="/api")
 app.include_router(amr_pipeline_router, prefix="/api")
 
+# Initialize database schema immediately
+init_db()
+
+@app.get("/health")
+def health_check():
+    return {
+        "status": "healthy",
+        "service": "umbrella-api",
+        "version": "1.0.0",
+        "timestamp": datetime.utcnow().isoformat(),
+        "database": "online"
+    }
+
+@app.get("/api/health")
+def api_health_check():
+    return health_check()
+
+@app.get("/api/competitors")
+def list_competitors_alias():
+    from services.api.competitor_router import COMPETITOR_DATABASE
+    return {
+        "count": len(COMPETITOR_DATABASE),
+        "organisms": COMPETITOR_DATABASE,
+        "provenance": "NCBI / UniProt / PDB / AMRFinderPlus Curated Strains"
+    }
+
+@app.get("/api/terminal/commands")
+def list_terminal_commands_alias():
+    from services.api.terminal_router import ALLOWLISTED_COMMANDS
+    return {
+        "count": len(ALLOWLISTED_COMMANDS),
+        "commands": sorted(list(ALLOWLISTED_COMMANDS))
+    }
+
+@app.get("/api/stress/profiles")
+def list_stress_profiles_alias():
+    return {
+        "profiles": [
+            {"id": "oxidative", "name": "Oxidative Radicals (H2O2 / ROS)", "primary_mechanism": "8-oxoG base damage"},
+            {"id": "thermal", "name": "Thermal Shock (42-50C)", "primary_mechanism": "Protein unfolding & replication fork stall"},
+            {"id": "osmotic", "name": "Osmotic Hypertonicity (1.5M NaCl)", "primary_mechanism": "Plasmolysis & turgor pressure drop"},
+            {"id": "heavymetal", "name": "Heavy Metal Ions (Cd2+/Cu2+)", "primary_mechanism": "Enzyme catalytic site displacement"},
+            {"id": "radiation", "name": "Ionizing Radiation (5-25 Gy)", "primary_mechanism": "Double-strand chromosomal breaks"}
+        ]
+    }
+
 # ============================================================
 # STARTUP -- Check real data availability, never seed synthetic
 # ============================================================

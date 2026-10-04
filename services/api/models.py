@@ -144,7 +144,7 @@ class AuditLogEntry(Base):
     """Immutable audit trail for all user and OS operations."""
     __tablename__ = "audit_logs"
 
-    log_id = Column(BigInteger, primary_key=True, autoincrement=True)
+    log_id = Column(Integer, primary_key=True, autoincrement=True)
     actor = Column(String(64), default="SYSTEM")
     action = Column(String(64), nullable=False)
     resource_type = Column(String(64), nullable=False)
@@ -170,7 +170,7 @@ class TerminalAuditLog(Base):
     """Audit log for commands executed in the in-browser sandboxed terminal."""
     __tablename__ = "terminal_audit_logs"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String(64), default="anonymous", nullable=False, index=True)
     command = Column(Text, nullable=False)
     status = Column(String(32), default="SUCCESS") # SUCCESS, BLOCKED, ERROR

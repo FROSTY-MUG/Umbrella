@@ -15,6 +15,7 @@ import {
   Search,
   FileText
 } from "lucide-react";
+import { ComplexDoubleHelix } from "../components/ComplexDoubleHelix";
 
 interface CompetitorOrganism {
   id: string;
@@ -266,6 +267,15 @@ export function GenomeCompetitorApp() {
                 ))}
               </div>
             </div>
+          </div>
+
+          {/* Interactive 3D Complex Double Helix DNA Strand with Breakage Loci */}
+          <div className="min-h-[380px] h-[380px]">
+            <ComplexDoubleHelix
+              breakageLoci={activeComp.predicted_breakage_loci}
+              structuralImpactScore={activeComp.structural_impact_score}
+              organismName={activeComp.name}
+            />
           </div>
 
           {/* Targeted Protein Structures & Families */}
