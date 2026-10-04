@@ -22,6 +22,7 @@ COPY services ./services
 COPY ml ./ml
 COPY alembic ./alembic
 COPY scripts ./scripts
+COPY data ./data
 COPY alembic.ini .
 COPY config.yaml .
 COPY umbrella.py .
@@ -30,8 +31,8 @@ COPY umbrella.py .
 # Set PYTHONPATH so Python can find the modules
 ENV PYTHONPATH=/app
 
-# Expose the FastAPI port
+# Expose default port
 EXPOSE 8000
 
-# Run the FastAPI server using Uvicorn
-CMD ["uvicorn", "services.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the FastAPI server using Uvicorn with dynamic $PORT support for Render
+CMD ["sh", "-c", "uvicorn services.api.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
