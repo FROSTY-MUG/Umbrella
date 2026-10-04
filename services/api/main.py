@@ -29,6 +29,11 @@ from ml.features.extractor import extract_amr_features_from_findings
 from ml.registry.model_store import predict_resistance, list_registered_models
 from services.vella.orchestrator import vella
 from services.api.forge_service import forge_compiler
+from services.api.auth_router import router as auth_router
+from services.api.terminal_router import router as terminal_router
+from services.api.competitor_router import router as competitor_router
+from services.api.stress_router import router as stress_router
+from services.api.amr_pipeline_router import router as amr_pipeline_router
 
 app = FastAPI(
     title="Umbrella OS - Scientific Bio-Computing Engine",
@@ -43,6 +48,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Register modular sub-routers
+app.include_router(auth_router, prefix="/api")
+app.include_router(terminal_router, prefix="/api")
+app.include_router(competitor_router, prefix="/api")
+app.include_router(stress_router, prefix="/api")
+app.include_router(amr_pipeline_router, prefix="/api")
 
 # Startup hook to initialize DB and seed initial benchmark reference isolates
 @app.on_event("startup")

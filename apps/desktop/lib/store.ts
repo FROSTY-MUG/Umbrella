@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { WindowState, AppManifest, SampleRef } from "../types/desktop";
 
 export const NATIVE_APPS: AppManifest[] = [
+  { id: "genome-competitor", name: "Genome Competitor", acronym: "GC", category: "genomics", description: "Multi-organism DS DNA competitor comparison, protein targets & breakage loci", defaultWidth: 940, defaultHeight: 620, minWidth: 720, minHeight: 480 },
+  { id: "stress-lab", name: "Stress Lab", acronym: "ST", category: "simulation", description: "Bacterial stress simulation, adaptive Gompertz growth curves & cellular morphology", defaultWidth: 920, defaultHeight: 600, minWidth: 700, minHeight: 460 },
   { id: "benchmark-dna", name: "DNA Benchmark", acronym: "DB", category: "genomics", description: "Age & gender demographic benchmark with self-building ASCII double helix", defaultWidth: 920, defaultHeight: 620, minWidth: 720, minHeight: 480 },
   { id: "genome-analyzer", name: "Genome Analyzer", acronym: "GA", category: "core_bio", description: "Sequence inspection, contigs, GC% distribution, and launchpad", defaultWidth: 840, defaultHeight: 560, minWidth: 640, minHeight: 420 },
   { id: "mutation-lab", name: "Mutation Lab", acronym: "ML", category: "sequence_diff", description: "Reference vs query comparison, SNP/INDEL detection and coordinates", defaultWidth: 860, defaultHeight: 560, minWidth: 680, minHeight: 440 },
