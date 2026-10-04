@@ -1,0 +1,11 @@
+{
+  "model_id": "amr-lr-clarithromycin-v1.0.0",
+  "target_antibiotic": "Clarithromycin",
+  "model_version": "v1.0.0",
+  "status": "NOT IMPLEMENTED",
+  "reason": "Insufficient real laboratory-linked rows (found 0 labeled rows, 0 classes; requires >= 2 rows with >= 2 classes)",
+  "training_rows": 0,
+  "dataset_manifest_id": "umbrella-init-2026",
+  "created_at": "2026-10-04T01:57:50.207643+00:00",
+  "research_use_only": true
+}

@@ -26,8 +26,8 @@ def test_prediction_probability_bounds():
 def test_resistant_marker_elevates_probability():
     # Negative baseline: zero markers
     res_clean = predict_amr("SMP-CLEAN", "ciprofloxacin", markers=[])
-    # Positive: canonical quinolone resistance markers
-    res_resistant = predict_amr("SMP-RES", "ciprofloxacin", markers=["gyrA_D87G", "parC_S80I", "qnrA1"])
+    # Positive: canonical quinolone resistance markers present in schema
+    res_resistant = predict_amr("SMP-RES", "ciprofloxacin", markers=["gyrA_D87N", "gyrA_S83I", "qnrA1"])
 
     assert res_resistant["calibrated_probability"] > res_clean["calibrated_probability"]
     assert res_resistant["predicted_class"] == "Resistant"

@@ -1,53 +1,76 @@
 {
-  "roc_auc": 0.9334,
-  "pr_auc": 0.9211,
-  "brier_score": 0.0742,
-  "precision": 0.9457,
-  "recall": 0.9104,
-  "f1_score": 0.9278,
-  "confusion_matrix": [
-    [
-      159,
-      7
-    ],
-    [
-      12,
-      122
-    ]
-  ],
-  "test_sample_count": 300,
+  "antibiotic": "Gentamicin",
+  "model_version": "v1.0.0",
+  "dataset_manifest_id": "umbrella-init-2026",
+  "sample_count": 5,
+  "evaluation_type": "loo_cv",
+  "regularization_C": 10.0,
+  "roc_auc": 0.3333,
+  "auroc": 0.3333,
+  "pr_auc": 0.45,
+  "auprc": 0.45,
+  "precision": 0.5,
+  "recall": 0.5,
+  "sensitivity": 0.5,
+  "specificity": 0.6667,
+  "brier_score": 0.4334,
+  "calibration_loss": 0.4334,
+  "confusion_matrix": {
+    "tn": 2,
+    "fp": 1,
+    "fn": 1,
+    "tp": 1
+  },
+  "gradient_boosting_comparison": {
+    "model_type": "GradientBoostingClassifier",
+    "n_estimators": 30,
+    "max_depth": 2,
+    "apparent_brier": 0.0006,
+    "loo_cv_auroc": 0.0,
+    "loo_cv_brier": 0.581
+  },
   "top_features": [
     {
-      "feature": "has_armA",
-      "weight": 1.312
+      "feature": "has_blaKPC",
+      "weight": 1.8446
     },
     {
-      "feature": "has_rmtB",
-      "weight": 1.2324
+      "feature": "has_emrD",
+      "weight": 1.4318
+    },
+    {
+      "feature": "has_aph(3')",
+      "weight": -0.6588
+    },
+    {
+      "feature": "has_aph(6)-Ic",
+      "weight": -0.6588
+    },
+    {
+      "feature": "has_aph(3')-IIa",
+      "weight": -0.6588
+    },
+    {
+      "feature": "has_qnrS1",
+      "weight": -0.6588
     },
     {
       "feature": "has_aac(3)",
-      "weight": 1.0848
+      "weight": -0.6588
     },
     {
-      "feature": "has_aac(6')",
-      "weight": 1.0672
+      "feature": "has_aac(3)-IId",
+      "weight": -0.6588
+    },
+    {
+      "feature": "has_qnrS",
+      "weight": -0.6588
     },
     {
       "feature": "total_amr_marker_count",
-      "weight": 0.6704
-    },
-    {
-      "feature": "has_qnrA",
-      "weight": -0.3082
-    },
-    {
-      "feature": "has_blaOXA",
-      "weight": -0.2596
-    },
-    {
-      "feature": "has_blaVIM",
-      "weight": -0.2502
+      "weight": 0.3863
     }
-  ]
+  ],
+  "evaluated_at": "2026-10-04T01:57:49.736423+00:00",
+  "disclaimer": "Metrics computed strictly on verified laboratory phenotype associations. Research use only."
 }

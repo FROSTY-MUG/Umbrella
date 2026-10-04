@@ -1,53 +1,74 @@
 {
-  "roc_auc": 0.9095,
-  "pr_auc": 0.8724,
-  "brier_score": 0.0918,
-  "precision": 0.9006,
-  "recall": 0.9416,
-  "f1_score": 0.9206,
-  "confusion_matrix": [
-    [
-      130,
-      16
-    ],
-    [
-      9,
-      145
-    ]
-  ],
-  "test_sample_count": 300,
+  "antibiotic": "Meropenem",
+  "model_version": "v1.0.0",
+  "dataset_manifest_id": "umbrella-init-2026",
+  "sample_count": 5,
+  "evaluation_type": "apparent",
+  "regularization_C": 10.0,
+  "roc_auc": 1.0,
+  "auroc": 1.0,
+  "pr_auc": 1.0,
+  "auprc": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "sensitivity": 1.0,
+  "specificity": 1.0,
+  "brier_score": 0.0128,
+  "calibration_loss": 0.0128,
+  "confusion_matrix": {
+    "tn": 4,
+    "fp": 0,
+    "fn": 0,
+    "tp": 1
+  },
+  "gradient_boosting_comparison": {
+    "model_type": "GradientBoostingClassifier",
+    "n_estimators": 30,
+    "max_depth": 2,
+    "apparent_brier": 0.0003
+  },
   "top_features": [
     {
-      "feature": "has_blaVIM",
-      "weight": 1.2955
-    },
-    {
-      "feature": "has_blaNDM",
-      "weight": 1.2444
+      "feature": "has_emrD",
+      "weight": 1.9402
     },
     {
       "feature": "has_blaKPC",
-      "weight": 1.0821
+      "weight": 1.8515
+    },
+    {
+      "feature": "has_blaSHV",
+      "weight": -0.653
+    },
+    {
+      "feature": "has_dfrA1",
+      "weight": -0.653
+    },
+    {
+      "feature": "has_dfrA12",
+      "weight": -0.3708
     },
     {
       "feature": "has_blaOXA",
-      "weight": 0.9984
+      "weight": -0.3708
     },
     {
-      "feature": "has_blaIMP",
-      "weight": 0.9575
+      "feature": "has_blaTEM",
+      "weight": -0.3708
     },
     {
-      "feature": "total_amr_marker_count",
-      "weight": 0.8007
+      "feature": "has_dfrA14",
+      "weight": -0.2821
     },
     {
-      "feature": "has_erm(A)",
-      "weight": -0.3608
+      "feature": "has_gyrA_S83I",
+      "weight": -0.2821
     },
     {
-      "feature": "has_aac(6')",
-      "weight": -0.3467
+      "feature": "has_gyrA_D87N",
+      "weight": -0.2821
     }
-  ]
+  ],
+  "evaluated_at": "2026-10-04T01:57:49.001734+00:00",
+  "disclaimer": "Metrics computed strictly on verified laboratory phenotype associations. Research use only."
 }

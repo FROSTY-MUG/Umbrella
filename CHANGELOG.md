@@ -11,9 +11,17 @@ Status labels: `IMPLEMENTED` | `PARTIALLY IMPLEMENTED` | `BLOCKED` | `NOT IMPLEM
 
 Changes in progress but not yet in a tagged release.
 
+### Completed
+- **Docker Bioinformatics Container Integration**:
+  - Containerized NCBI AMRFinderPlus v4.2.7 (DB: 2026-08-07.1) via Docker Desktop engine (`ncbi/amr:latest`).
+  - Containerized GenEpi ResFinder v4.7.2 (`staphb/resfinder:latest`) for independent acquired gene and point mutation cross-checks.
+  - Implemented cAMRah multi-tool ensemble workflow (`core/bio/camrah.py`) integrating 6 AMR detection engines (AMRFinderPlus, ResFinder, CARD/RGI, Abricate NCBI, Abricate ARG-ANNOT, BV-BRC) with concordance scoring.
+  - Wired `umbrella data annotate` to run containerized AMRFinderPlus across all staged genomes, successfully generating real TSV outputs.
+  - Built real feature extraction engine (`ml/features/extractor.py`) parsing AMRFinderPlus TSVs into `feature_matrix.parquet`.
+  - Staged and SHA-256 checksum verified 8 real bacterial genomes and 12 normalized AMR phenotype profiles.
+
 ### In Progress
-- Full AMR model panel — 30+ antibiotics (blocked on real BV-BRC data acquisition)
-- WSL2 + AMRFinderPlus binary integration (blocked on WSL2 installation)
+- Full AMR model panel — 30+ antibiotics
 - Celery async job worker (`services/workers/`)
 - MinIO FASTA object storage integration
 - TanStack Query + Zod frontend hardening

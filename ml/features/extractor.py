@@ -5,27 +5,42 @@ into sparse/dense feature vectors for per-antibiotic ML models.
 """
 
 from typing import List, Dict, Any, Optional
+from pathlib import Path
 import pandas as pd
 import numpy as np
 
 # Canonical AMR resistance genes and mutations tracked across major bacterial pathogens
+# Extended to cover actual variants detected in our BV-BRC benchmark genomes
 CANONICAL_AMR_MARKERS = [
-    # Beta-lactams / Carbapenems
+    # Beta-lactams / Carbapenems (acquired genes)
     "blaTEM", "blaSHV", "blaCTX-M", "blaOXA", "blaKPC", "blaNDM", "blaVIM", "blaIMP",
-    # Fluoroquinolones (mutations & genes)
-    "gyrA_D87G", "gyrA_S83L", "parC_S80I", "qnrA", "qnrB", "qnrS",
-    # Aminoglycosides
-    "aac(3)", "aac(6')", "aadA", "aph(3')", "armA", "rmtB",
+    # Beta-lactam PBP mutations (Streptococcus)
+    "pbp1a", "pbp2x",
+    # Fluoroquinolones — mutations (cover common variants at key residues)
+    "gyrA_D87G", "gyrA_D87N", "gyrA_S83L", "gyrA_S83I",
+    "parC_S80I",
+    # Fluoroquinolones — plasmid-mediated (qnr gene families)
+    "qnrA", "qnrA1", "qnrB", "qnrS", "qnrS1",
+    # Aminoglycosides (acetyltransferases, adenylyltransferases, phosphotransferases)
+    "aac(3)", "aac(3)-IId", "aac(6')", "aadA",
+    "aph(3')", "aph(3')-IIa", "aph(6)-Ic",
+    "armA", "rmtB",
     # Tetracyclines
     "tet(A)", "tet(B)", "tet(M)", "tet(X)",
-    # Macrolides
+    # Macrolides / Lincosamides
     "erm(A)", "erm(B)", "erm(C)", "mph(A)",
     # Sulfonamides & Trimethoprim
-    "sul1", "sul2", "dfrA1", "dfrA12",
-    # Colistin
+    "sul1", "sul2", "dfrA1", "dfrA12", "dfrA14",
+    # Colistin (polymyxin)
     "mcr-1", "mcr-2",
-    # Rifamycins
-    "rpoB_S531L", "rpoB_H526Y"
+    # Rifamycins (rpoB mutations)
+    "rpoB_S531L", "rpoB_H526Y",
+    # Efflux pumps (cross-resistance markers)
+    "pmrA", "emrD",
+    # Fosfomycin
+    "fosA",
+    # Nitrofurantoin
+    "nfsB",
 ]
 
 def extract_amr_features_from_findings(
@@ -67,8 +82,50 @@ def extract_amr_features_from_findings(
 
     return features
 
+# Alias for backward compatibility
+CANONICAL_MARKERS = CANONICAL_AMR_MARKERS
+
 def get_feature_schema() -> List[str]:
     """Returns the ordered list of feature column names."""
     cols = [f"has_{m}" for m in CANONICAL_AMR_MARKERS]
     cols.extend(["gc_fraction", "contigs_log", "length_mb", "total_amr_marker_count"])
     return cols
+
+def build_feature_matrix_from_amr_dir(
+    amr_dir: Path,
+    output_parquet: Optional[Path] = None
+) -> pd.DataFrame:
+    """
+    Parses all AMRFinderPlus TSV files in amr_dir and builds a standardized
+    feature DataFrame, saving to parquet if requested.
+    """
+    from core.bio.amrfinder import parse_amrfinder_tsv
+
+    amr_files = list(Path(amr_dir).glob("*.tsv"))
+    rows = []
+    index = []
+
+    for f in amr_files:
+        sample_id = f.stem.replace("_amrfinder", "").replace("_amr", "")
+        findings = parse_amrfinder_tsv(f, sample_id=sample_id)
+        feat_dict = extract_amr_features_from_findings(findings)
+        rows.append(feat_dict)
+        index.append(sample_id)
+
+    if not rows:
+        schema = get_feature_schema()
+        df = pd.DataFrame(columns=schema)
+    else:
+        df = pd.DataFrame(rows, index=index)
+
+    if output_parquet:
+        out_p = Path(output_parquet)
+        out_p.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            df.to_parquet(out_p)
+        except Exception:
+            csv_path = out_p.with_suffix(".csv")
+            df.to_csv(csv_path)
+
+    return df
+

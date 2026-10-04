@@ -47,9 +47,10 @@ export function SampleVaultApp() {
     if (!file) return;
 
     setUploading(true);
+    const orgName = file.name.replace(/\.(fna|fasta|fa)$/i, "").replace(/[._]/g, " ");
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("organism", "Escherichia coli (Uploaded)");
+    formData.append("organism", orgName || "Isolate (User Ingested)");
 
     try {
       const res = await fetch("http://localhost:8000/api/samples/upload", {

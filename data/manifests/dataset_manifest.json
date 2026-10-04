@@ -5,5 +5,98 @@
   "created_at": "2026-10-04T00:00:00Z",
   "genomes_staged": 0,
   "phenotype_records": 0,
-  "status": "INITIALIZED"
+  "status": "SYNCHRONIZED",
+  "genomes": [
+    {
+      "genome_id": "1280.16599",
+      "filename": "1280.16599.fna",
+      "path": "data/raw/genomes/1280.16599.fna",
+      "size_bytes": 611303,
+      "sha256": "94498c6666efa56c6ae8572b32dfd922cff484c5792609cc90051e1efe823319",
+      "source": "BV-BRC / NCBI",
+      "verified": true
+    },
+    {
+      "genome_id": "1284829.3",
+      "filename": "1284829.3.fna",
+      "path": "data/raw/genomes/1284829.3.fna",
+      "size_bytes": 552656,
+      "sha256": "8ceaa2b745d8a512c8ed97ff984fa63e4547f6f9dbb527712ce50c45155459ee",
+      "source": "BV-BRC / NCBI",
+      "verified": true
+    },
+    {
+      "genome_id": "1313.19676",
+      "filename": "1313.19676.fna",
+      "path": "data/raw/genomes/1313.19676.fna",
+      "size_bytes": 1438748,
+      "sha256": "ca61a7a3749634d32bc84f0c24cfe11865ba6c41ed0f45f469ee8eebf1101bd6",
+      "source": "BV-BRC / NCBI",
+      "verified": true
+    },
+    {
+      "genome_id": "1313.31521",
+      "filename": "1313.31521.fna",
+      "path": "data/raw/genomes/1313.31521.fna",
+      "size_bytes": 1112000,
+      "sha256": "e332cdc116e437f5d356712a7ca58e66a4c6cd1715a7b691f62248162b2dcaa0",
+      "source": "BV-BRC / NCBI",
+      "verified": true
+    },
+    {
+      "genome_id": "562.56783",
+      "filename": "562.56783.fna",
+      "path": "data/raw/genomes/562.56783.fna",
+      "size_bytes": 208257,
+      "sha256": "22f08d9907eac84d97478c3043531d477ed768d221cdbdf464034186a7175743",
+      "source": "BV-BRC / NCBI",
+      "verified": true
+    },
+    {
+      "genome_id": "573.14535",
+      "filename": "573.14535.fna",
+      "path": "data/raw/genomes/573.14535.fna",
+      "size_bytes": 3178095,
+      "sha256": "23cca7585a904d0d3d41c615a8b8fa68d7f11a2b8fe9a69b8825aeccefb2f8f3",
+      "source": "BV-BRC / NCBI",
+      "verified": true
+    },
+    {
+      "genome_id": "573.21864",
+      "filename": "573.21864.fna",
+      "path": "data/raw/genomes/573.21864.fna",
+      "size_bytes": 221864,
+      "sha256": "0a01a33c6309c9d0d478be7dc3dd4a0052195ac33bf4b39d93a782a969da6ab0",
+      "source": "BV-BRC / NCBI",
+      "verified": true
+    },
+    {
+      "genome_id": "573.54074",
+      "filename": "573.54074.fna",
+      "path": "data/raw/genomes/573.54074.fna",
+      "size_bytes": 857656,
+      "sha256": "a18e5ed2693a683f366d4090dfea31ddbb0de719b728d5fe40d5d3fe05169dc5",
+      "source": "BV-BRC / NCBI",
+      "verified": true
+    }
+  ],
+  "sources": [
+    "BV-BRC",
+    "NCBI AMRFinderPlus DB",
+    "CGE ResFinder DB",
+    "CARD"
+  ],
+  "total_phenotype_records": 12,
+  "total_genomes": 8,
+  "updated_at": "2026-10-04T01:37:53.516400+00:00",
+  "phenotype_files": [
+    "phenotypes_ciprofloxacin.json",
+    "phenotypes_gentamicin.json",
+    "phenotypes_meropenem.json",
+    "phenotypes_tetracycline.json",
+    "phenotypes_amoxicillin.json",
+    "phenotypes_ceftriaxone.json",
+    "phenotypes_vancomycin.json",
+    "phenotypes_colistin.json"
+  ]
 }

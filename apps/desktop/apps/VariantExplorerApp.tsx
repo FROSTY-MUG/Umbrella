@@ -16,8 +16,7 @@ export function VariantExplorerApp() {
     drugClass: "Fluoroquinolone"
   });
 
-    // Nodes will be populated from active graph context
-  ];
+  const nodes: any[] = [];
 
   return (
     <div className="p-4 space-y-4 font-mono text-xs text-slate-200">

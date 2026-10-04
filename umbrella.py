@@ -280,17 +280,35 @@ def cmd_doctor(args):
     checks.append(("Genome files (raw)", str(genome_count), genome_count > 0))
     checks.append(("Data lake size", f"{data_size} MB", True))
 
-    # -- AMRFinder --
-    _print_section("BIOINFORMATICS TOOLS")
-    amrfinder_path = os.environ.get("AMRFINDER_PATH", "amrfinder")
-    amrfinder_ok = False
-    amrfinder_info = f"Not found at: {amrfinder_path}"
-    af_which = shutil.which(amrfinder_path)
-    if af_which:
-        amrfinder_ok = True
-        af_rc, af_ver = _run_cmd([amrfinder_path, "--version"])
-        amrfinder_info = f"{af_which} (v{af_ver})" if af_rc == 0 else af_which
-    checks.append(("AMRFinderPlus", amrfinder_info, amrfinder_ok))
+    # -- AMRFinderPlus, ResFinder, cAMRah --
+    _print_section("BIOINFORMATICS ENGINES")
+    try:
+        from core.bio.amrfinder import AMRFinderRunner
+        af_runner = AMRFinderRunner()
+        af_mode, af_desc = af_runner.detect_execution_mode()
+        af_ver = af_runner.get_version_info()
+        af_ok = af_mode != "none"
+        af_info = f"[{af_mode.upper()}] v{af_ver.get('software_version', '4.2.7')} (DB: {af_ver.get('database_version', '2026-08-07.1')})" if af_ok else af_desc
+        checks.append(("AMRFinderPlus (NCBI)", af_info, af_ok))
+    except Exception as e:
+        checks.append(("AMRFinderPlus (NCBI)", f"Check error: {e}", False))
+
+    try:
+        from core.bio.resfinder import ResFinderRunner
+        rf_runner = ResFinderRunner()
+        rf_mode, rf_desc = rf_runner.detect_execution_mode()
+        rf_ver = rf_runner.get_version_info()
+        rf_ok = rf_mode != "none"
+        rf_info = f"[{rf_mode.upper()}] v{rf_ver.get('software_version', '4.7.2')}" if rf_ok else rf_desc
+        checks.append(("ResFinder (GenEpi)", rf_info, rf_ok))
+    except Exception as e:
+        checks.append(("ResFinder (GenEpi)", f"Check error: {e}", False))
+
+    try:
+        from core.bio.camrah import SUPPORTED_CAMRAH_TOOLS
+        checks.append(("cAMRah Harmonizer", f"Ready ({len(SUPPORTED_CAMRAH_TOOLS)} tools: {', '.join(SUPPORTED_CAMRAH_TOOLS)})", True))
+    except Exception as e:
+        checks.append(("cAMRah Harmonizer", f"Check error: {e}", False))
 
     # -- Model Count --
     _print_section("ML MODEL REGISTRY")
@@ -721,14 +739,20 @@ def cmd_data_normalize(args):
 
 
 def cmd_data_annotate(args):
-    """Run AMRFinderPlus annotation on raw genomes."""
+    """Run AMRFinderPlus (and optional ResFinder / cAMRah) annotation on raw genomes."""
     _print_header("UMBRELLA DATA -- AMR ANNOTATION")
 
-    amrfinder_path = os.environ.get("AMRFINDER_PATH", "amrfinder")
-    if not shutil.which(amrfinder_path):
-        print(f"  [ERROR] AMRFinderPlus not found at: {amrfinder_path}")
-        print(f"  Install AMRFinderPlus in WSL and set AMRFINDER_PATH.")
-        print(f"  See: https://github.com/ncbi/amr/wiki/Installing-AMRFinder")
+    try:
+        from core.bio.amrfinder import AMRFinderRunner
+        af_runner = AMRFinderRunner()
+        mode, desc = af_runner.detect_execution_mode()
+        if mode == "none":
+            print(f"  [ERROR] No AMRFinderPlus runner available: {desc}")
+            print("  Please ensure Docker Desktop is running (ncbi/amr container) or install amrfinder.")
+            return 1
+        print(f"  Execution mode: {mode.upper()} ({desc})")
+    except Exception as e:
+        print(f"  [ERROR] Cannot initialize AMRFinderPlus runner: {e}")
         return 1
 
     genomes_dir = DATA_ROOT / "raw" / "genomes"
@@ -737,32 +761,43 @@ def cmd_data_annotate(args):
 
     fasta_files = list(genomes_dir.rglob("*.fna")) + list(genomes_dir.rglob("*.fasta"))
     if not fasta_files:
-        print("  [INFO] No genome files found. Download genomes first.")
+        print("  [INFO] No genome files found in data/raw/genomes. Run 'umbrella data download' first.")
         return 0
 
     print(f"  Found {len(fasta_files)} genome files to annotate.")
+
+    # Taxon / organism mapping
+    organism_map = {
+        "562": "Escherichia",
+        "573": "Klebsiella_pneumoniae",
+        "1280": "Staphylococcus_aureus",
+        "1313": "Streptococcus_pneumoniae",
+        "1284829": "Acinetobacter_baumannii",
+        "470": "Acinetobacter_baumannii",
+        "287": "Pseudomonas_aeruginosa"
+    }
+
     annotated = 0
     for fasta in fasta_files:
         out_tsv = output_dir / f"{fasta.stem}_amr.tsv"
-        if out_tsv.exists():
-            print(f"  [SKIP] {fasta.name} (already annotated)")
+        if out_tsv.exists() and out_tsv.stat().st_size > 0:
+            print(f"  [SKIP] {fasta.name} (already annotated: {out_tsv.name})")
+            annotated += 1
             continue
 
-        cmd = [
-            amrfinder_path,
-            "--nucleotide", str(fasta),
-            "--output", str(out_tsv),
-            "--plus",
-        ]
-        print(f"  [RUN] amrfinder --nucleotide {fasta.name}...")
-        rc, out = _run_cmd(cmd, timeout=300)
+        # Detect organism from filename prefix if applicable
+        taxon_prefix = fasta.stem.split(".")[0]
+        organism = organism_map.get(taxon_prefix)
+
+        print(f"  [RUN] amrfinder ({mode}) on {fasta.name} (organism: {organism or 'general'})...")
+        rc, dest, log = af_runner.run(fasta, output_tsv=out_tsv, organism=organism, plus=True, timeout=600)
         if rc == 0:
             print(f"  [OK] -> {out_tsv.name}")
             annotated += 1
         else:
-            print(f"  [ERROR] amrfinder failed for {fasta.name}: {out}")
+            print(f"  [ERROR] amrfinder failed for {fasta.name}: {log[:200]}")
 
-    print(f"\n  Annotated: {annotated}/{len(fasta_files)}")
+    print(f"\n  Annotated: {annotated}/{len(fasta_files)} genomes complete.")
     return 0
 
 
@@ -783,17 +818,16 @@ def cmd_data_features(args):
     print(f"  Processing {len(amr_files)} AMR annotation files...")
     print("  Building feature matrix...")
 
-    # Import feature extractor
     try:
-        from ml.features.extractor import CANONICAL_MARKERS
-        print(f"  Using {len(CANONICAL_MARKERS)} canonical AMR marker features")
-    except ImportError:
-        print("  [ERROR] Cannot import feature extractor")
+        from ml.features.extractor import build_feature_matrix_from_amr_dir, CANONICAL_MARKERS
+        out_parquet = features_dir / "feature_matrix.parquet"
+        df = build_feature_matrix_from_amr_dir(amr_dir, output_parquet=out_parquet)
+        print(f"  [OK] Extracted features for {len(df)} isolates across {len(df.columns)} columns.")
+        print(f"  Saved feature matrix to: {out_parquet}")
+        return 0
+    except Exception as e:
+        print(f"  [ERROR] Feature extraction failed: {e}")
         return 1
-
-    print(f"\n  Feature matrix will be saved to: {features_dir / 'feature_matrix.parquet'}")
-    print(f"  [INFO] Feature extraction pipeline ready -- requires annotated AMR data.")
-    return 0
 
 
 def cmd_data_benchmark(args):

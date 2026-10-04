@@ -362,14 +362,20 @@ http://localhost:9001 — login with `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` f
 
 ---
 
-## WSL2 & Bioinformatics Tools
+## Docker & Bioinformatics Engines
 
-**WSL2 is currently not installed** on this machine. AMRFinderPlus and ResFinder require it.
+**Docker Desktop is installed and active**, enabling seamless containerized execution of all Linux-based bioinformatics engines directly on Windows:
 
-### Install WSL2
+- **AMRFinderPlus (NCBI)**: `docker pull ncbi/amr:latest` (v4.2.7 with bundled curated DB 2026-08-07.1)
+- **ResFinder (GenEpi)**: `docker pull staphb/resfinder:latest` (v4.7.2)
+- **cAMRah Harmonizer**: Multi-tool consensus workflow comparing 6 AMR databases
+
+Native WSL2 installation is also supported as an alternate execution target.
+
+### WSL2 Alternative (Optional)
 
 ```powershell
-# Run as Administrator — requires reboot
+# Run as Administrator if native Linux binary execution is desired
 wsl --install -d Ubuntu-22.04
 ```
 
