@@ -16,9 +16,6 @@ import { SampleVaultApp } from "../apps/SampleVaultApp";
 import { RadiationLabApp } from "../apps/RadiationLabApp";
 import { PathogenAtlasApp } from "../apps/PathogenAtlasApp";
 import { VariantExplorerApp } from "../apps/VariantExplorerApp";
-import { ScienceLabApp } from "../apps/ScienceLabApp";
-import { ResearchDeskApp } from "../apps/ResearchDeskApp";
-import { AnalysisStudioApp } from "../apps/AnalysisStudioApp";
 import { BioTerminalApp } from "../apps/BioTerminalApp";
 import { ReportStudioApp } from "../apps/ReportStudioApp";
 import { UmbrellaForgeApp } from "../apps/UmbrellaForgeApp";
@@ -29,12 +26,14 @@ import { BenchmarkDnaApp } from "../apps/BenchmarkDnaApp";
 import { GenomeCompetitorApp } from "../apps/GenomeCompetitorApp";
 import { StressLabApp } from "../apps/StressLabApp";
 import { BiotechLoginModal } from "../components/BiotechLoginModal";
+import { BootSequence } from "../components/BootSequence";
 
 export default function DesktopPage() {
   const { windows, installedApps, closeWindow, activeWindowId, setLauncherOpen, toggleLauncher } =
     useDesktopStore();
   const [loginModalOpen, setLoginModalOpen] = React.useState(false);
   const [currentUser, setCurrentUser] = React.useState<any>(null);
+  const [bootSequenceComplete, setBootSequenceComplete] = React.useState(false);
 
   // Global event listener for clearance login
   useEffect(() => {
@@ -86,12 +85,6 @@ export default function DesktopPage() {
         return <PathogenAtlasApp />;
       case "variant-explorer":
         return <VariantExplorerApp />;
-      case "science-lab":
-        return <ScienceLabApp />;
-      case "research-desk":
-        return <ResearchDeskApp />;
-      case "analysis-studio":
-        return <AnalysisStudioApp />;
       case "bio-terminal":
         return <BioTerminalApp />;
       case "report-studio":
@@ -105,7 +98,7 @@ export default function DesktopPage() {
       default:
         const forgeApp = installedApps.find((a) => a.id === win.appId);
         if (forgeApp && forgeApp.isForge) {
-          return <GeneratedForgeAppView appDef={forgeApp} />;
+          return <GeneratedForgeAppView appDef={forgeApp as any} />;
         }
         return (
           <div className="p-8 text-center text-xs font-mono text-slate-400">
@@ -116,24 +109,49 @@ export default function DesktopPage() {
   };
 
   return (
-    <main className="relative h-screen w-screen overflow-hidden bg-bio-grid bg-[#080c0e]">
-      {/* Bio-Radar Sweep Effect */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
-        <div className="w-[850px] h-[850px] rounded-full border border-emerald-900/20 relative flex items-center justify-center">
-          <div className="w-[550px] h-[550px] rounded-full border border-emerald-900/15" />
-          <div className="w-[280px] h-[280px] rounded-full border border-emerald-900/10" />
-          <div className="absolute inset-0 rounded-full radar-sweep" />
+    <>
+      {!bootSequenceComplete && (
+        <BootSequence onComplete={() => setBootSequenceComplete(true)} />
+      )}
+      
+      {bootSequenceComplete && (
+        <main className="relative h-screen w-screen overflow-hidden bg-[#f0f0e8] text-slate-900">
+      
+      {/* Top Elevated Bar */}
+      <div className="absolute top-0 left-0 w-full h-12 bg-white border-b border-slate-300 flex items-center px-6 z-0 shadow-sm">
+        <h1 className="text-xl font-bold tracking-[0.3em] text-slate-800">
+          UMBRELLA CORPORATION
+        </h1>
+      </div>
+
+      {/* Clean White Resident Evil Theme Background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 flex items-center justify-center pt-12">
+        {/* Subtle cement texture overlay */}
+        <div 
+          className="absolute inset-0 opacity-30 pointer-events-none mix-blend-multiply" 
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.1) 100%)' }}
+        />
+        {/* Crisp Umbrella Logo in the center */}
+        <div className="w-[400px] h-[400px] opacity-[0.03] flex items-center justify-center">
+          <svg viewBox="0 0 100 100" className="w-full h-full fill-slate-800">
+            <path d="M50 0 A 50 50 0 0 0 0 50 L 50 50 Z" />
+            <path d="M100 50 A 50 50 0 0 0 50 0 L 50 50 Z" fill="#dc2626" />
+            <path d="M14.6 14.6 A 50 50 0 0 0 0 50 L 50 50 Z" fill="#dc2626" />
+            <path d="M85.4 14.6 A 50 50 0 0 1 100 50 L 50 50 Z" />
+          </svg>
         </div>
       </div>
 
       {/* Corporate Lab Station Watermark */}
-      <div className="absolute top-4 right-6 pointer-events-none text-right font-mono select-none opacity-40">
-        <div className="text-xs font-bold tracking-widest text-emerald-500">UMBRELLA OS</div>
-        <div className="text-[10px] text-slate-400">SECURE SCIENTIFIC WORKSTATION // BUILD 2026.10</div>
+      <div className="absolute top-16 right-6 pointer-events-none text-right font-sans select-none opacity-40 z-0">
+        <div className="text-sm font-bold tracking-widest text-slate-800">UMBRELLA OS</div>
+        <div className="text-xs text-slate-600">SECURE SCIENTIFIC WORKSTATION // BUILD 2026.10</div>
       </div>
 
       {/* Desktop Wallpaper App Icon Grid */}
-      <DesktopIconGrid />
+      <div className="relative z-10 w-full h-full pointer-events-auto pt-12">
+        <DesktopIconGrid />
+      </div>
 
       {/* Render All Open Desktop Windows */}
       {windows.map((win) => (
@@ -157,6 +175,8 @@ export default function DesktopPage() {
           setLoginModalOpen(false);
         }}
       />
-    </main>
+        </main>
+      )}
+    </>
   );
 }
