@@ -25,6 +25,9 @@ import { SystemMonitorApp } from "../apps/SystemMonitorApp";
 import { BenchmarkDnaApp } from "../apps/BenchmarkDnaApp";
 import { GenomeCompetitorApp } from "../apps/GenomeCompetitorApp";
 import { StressLabApp } from "../apps/StressLabApp";
+import { ResearchDeskApp } from "../apps/ResearchDeskApp";
+import { AnalysisStudioApp } from "../apps/AnalysisStudioApp";
+import { ScienceLabApp } from "../apps/ScienceLabApp";
 import { BiotechLoginModal } from "../components/BiotechLoginModal";
 import { BootSequence } from "../components/BootSequence";
 
@@ -67,6 +70,12 @@ export default function DesktopPage() {
         return <GenomeCompetitorApp />;
       case "stress-lab":
         return <StressLabApp />;
+      case "science-lab":
+        return <ScienceLabApp />;
+      case "research-desk":
+        return <ResearchDeskApp />;
+      case "analysis-studio":
+        return <AnalysisStudioApp />;
       case "benchmark-dna":
         return <BenchmarkDnaApp />;
       case "genome-analyzer":

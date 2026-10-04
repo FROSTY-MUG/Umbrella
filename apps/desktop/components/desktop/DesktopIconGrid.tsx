@@ -10,7 +10,11 @@ export function DesktopIconGrid() {
 
   const handleIconClick = (e: React.MouseEvent, appId: string) => {
     e.stopPropagation();
-    setSelectedAppId(appId);
+    if (selectedAppId === appId) {
+      openWindow(appId);
+    } else {
+      setSelectedAppId(appId);
+    }
   };
 
   const handleIconDoubleClick = (appId: string) => {
