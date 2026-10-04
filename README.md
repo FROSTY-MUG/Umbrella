@@ -1,364 +1,89 @@
 # Umbrella OS
 
-**AI-Native Computational Biology Operating System**
+AI-Native Computational Biology Operating System
 
-Umbrella OS is a full browser-based desktop operating system built for genomic research. It runs as a Next.js application that looks and behaves like a real OS — with draggable/resizable windows, a taskbar, a launcher, and 17 native scientific applications — backed by a FastAPI scientific computing engine, trained AMR resistance models, and Vella, an AI orchestrator with multi-provider fallback.
+## What It Is
+Umbrella OS is an advanced, fully integrated desktop operating system built entirely for the web. It is designed specifically for computational biology, sequence analysis, and real-time genomic exploration. 
 
-> This is not a typical web app. It is a programmable research environment that wraps bioinformatics tools, ML inference, and scientific workflows into a unified desktop experience.
+Unlike traditional bioinformatics pipelines which rely on disparate CLI tools, disjointed web servers, and static reports, Umbrella OS unifies high-performance algorithms into a single immersive graphical environment. It behaves exactly like a native operating system (complete with draggable windows, taskbars, and real-time multitasking) while running directly in your browser.
 
----
+At its core, it hosts an ecosystem of native scientific applications capable of 3D genomic visualization, antimicrobial resistance (AMR) detection, targeted mutagenesis simulation, and biophysical stress modeling.
 
-## Table of Contents
+## How It Works
+The system operates on a highly decoupled, modern microservice architecture:
+1. **The Web OS (Frontend)**: Built with React, Next.js, and Zustand, it renders a high-performance window manager and handles complex WebGL/Canvas data visualizations (e.g., rendering millions of base pairs instantly).
+2. **The Compute Core (Backend)**: A Python FastAPI application that acts as the secure gatekeeper. It handles authentication, data validation, and routing.
+3. **The Data Lake**: PostgreSQL manages relational metadata, RBAC, and provenance trails, while massive raw genomic files (FASTA/FASTQ) are streamed securely to and from an S3-compatible Object Storage (MinIO).
+4. **Asynchronous Workers**: Heavy bioinformatics jobs (like sequence alignment) are offloaded to Python Celery workers via a Redis queue, ensuring the UI remains perfectly fluid regardless of the computational load.
+5. **AI Orchestration (Vella)**: Powered by Google Gemini, Vella is an AI agent embedded in the OS. It interprets natural language commands, selects the appropriate internal APIs, executes pipelines, and synthesizes the data into grounded scientific explanations.
 
-- [What's Inside](#whats-inside)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Quick Start (SQLite mode — no Docker needed)](#quick-start-sqlite-mode--no-docker-needed)
-- [Full Stack Start (with Docker)](#full-stack-start-with-docker)
-- [Project Structure](#project-structure)
-- [Native Applications](#native-applications)
-- [ML Models](#ml-models)
-- [Umbrella CLI](#umbrella-cli)
-- [Environment Variables](#environment-variables)
-- [Current State](#current-state)
-- [Roadmap](#roadmap)
-- [Documentation](#documentation)
+## Why It Was Made
+Bioinformatics suffers from extreme fragmentation. Researchers often spend more time wrestling with software dependencies, bash scripts, and data formats than analyzing biological realities. 
 
----
-
-## What's Inside
-
-| Layer | What it does |
-|-------|-------------|
-| **Desktop Shell** | Full window manager (drag, resize, minimize, maximize, cascade, focus stack) running in Next.js 15 |
-| **FastAPI Backend** | Typed scientific endpoints: FASTA upload, AMR analysis, ML prediction, variant calling, radiation simulation, Vella chat, Forge app compilation |
-| **ML Pipeline** | L2-regularized logistic regression + Platt calibration for 4 antibiotics with OOD detection and evidence dossiers |
-| **Vella** | AI orchestrator — Gemini (primary) → OpenRouter (fallback) → deterministic local (offline) |
-| **Umbrella Forge** | Natural-language app compiler: turns intent into live sandboxed OS windows |
-| **Bio Core** | Streaming FASTA parser, N50/GC%/contig QC, pairwise variant calling, biophysical radiation simulation |
-| **Infra** | Docker Compose: PostgreSQL 16 + pgvector, Redis 7, MinIO — auto-falls back to SQLite if Docker is absent |
+Umbrella OS was created to solve this by providing a "zero-friction" environment. We built it to:
+- **Democratize Sequence Analysis**: Provide researchers with an intuitive, visual interface for complex genetic comparisons.
+- **Ensure Absolute Reproducibility**: Introduce strict, cryptographic data provenance so that every simulation and report can be traced back to its raw origins and exact software versions.
+- **Pioneer AI-Assisted Research**: Prove that Large Language Models (LLMs) can be safely integrated into scientific workflows not just as chatbots, but as verifiable orchestration engines that execute real computational pipelines securely.
 
 ---
 
-## Tech Stack
+## DEMO / LOCAL AUTHORIZATION
 
-### Frontend (`apps/desktop/`)
+To enter the Umbrella OS environment during local development or in demonstration deployments, you must pass the initial cinematic boot sequence.
 
-| | |
-|---|---|
-| Framework | Next.js 15.1.7 |
-| UI | React 19, TypeScript 5.7 |
-| Styling | Tailwind CSS 3.4 |
-| State | Zustand 5.0.3 |
-| Animation | Framer Motion 12.4 |
-| Icons | Lucide React 0.475 |
+**Authorization ID to enter the site**: `058726110`
 
-### Backend (`services/api/`)
-
-| | |
-|---|---|
-| Framework | FastAPI 0.115+ |
-| Validation | Pydantic v2 |
-| ORM | SQLAlchemy 2 |
-| DB (primary) | PostgreSQL 16 + pgvector |
-| DB (fallback) | SQLite (automatic) |
-| Queue | Redis + Celery (installed, not yet wired) |
-| Object storage | MinIO (configured, not yet wired) |
-| Bio | Biopython, NumPy, SciPy, Pandas |
-| ML | scikit-learn, joblib |
-| AI | google-genai, httpx |
+*Note: This is a demonstration authorization mechanism explicitly hardcoded for showcase purposes. It is NOT a substitute for production authentication. In a real-world, clinical, or enterprise deployment, this ID barrier is removed and replaced entirely by secure OAuth 2.0 or Enterprise SSO integrations.*
 
 ---
 
-## Prerequisites
+## System Structure & Applications
 
-| Tool | Minimum version | Notes |
-|------|----------------|-------|
-| Python | 3.10+ | Backend and CLI |
-| Node.js | 18+ | Frontend |
-| pnpm | 8+ | JS package manager (`npm i -g pnpm`) |
-| Docker Desktop | Any recent | Optional — SQLite fallback works without it |
-| WSL2 (Ubuntu 22.04) | — | Optional — required only for AMRFinderPlus integration |
+The OS ecosystem currently ships with the following deeply integrated applications:
 
----
+### 1. GENOME ANALYSIS
+**Genome Analyzer**: The core sequence viewer handles gigabytes of nucleotide data seamlessly. It allows users to jump instantly to critical structural landmarks (ORIGIN, TERMINUS, GC SKEW MAX, REPLICATION FORK) and visualizes the raw sequence in an ATGC matrix.
 
-## Quick Start (SQLite mode — no Docker needed)
+### 2. AMR SURVEILLANCE
+**AMR Sentinel**: Scans sequences for known antimicrobial resistance genes, virulence factors, and stress response elements. Results are cross-referenced with a unified pathogen database to present an immediate threat analysis and drug panel overview.
 
-This gets the full OS running locally with zero infrastructure dependencies.
+### 3. SEQUENCE COMPARISON
+**Genome Competitor**: Users can overlay a query sequence against a canonical reference sequence. The visualization engine highlights Structural Variations (SVs), Single Nucleotide Polymorphisms (SNPs), and Insertions/Deletions (INDELs) in a responsive 3D space powered by WebGL/Three.js.
 
-```powershell
-# 1. Clone (if not already done)
-git clone https://github.com/FROSTY-MUG/Umbrella.git
-cd Umbrella
+### 4. MUTATION ANALYSIS
+**Mutation Lab**: Simulates targeted edits on a given sequence. By programmatically introducing base transversions and transitions, the system computes simulated viability scores (PASS/FAIL), evaluating if essential replication mechanics are compromised.
 
-# 2. Create the packages/ placeholder (pnpm workspace requires it)
-New-Item -ItemType Directory -Path packages -Force
+### 5. COMPUTATIONAL SIMULATION
+**Stress Lab**: Simulates bacterial response curves against environmental stressors (Heat Shock, Chemical Mutagen, Radiation). It dynamically models Gompertz growth curves over simulated time.
 
-# 3. Install Python dependencies
-pip install -r requirements.txt
+### 6. SCIENTIFIC RESEARCH
+**Sample Vault / Sample Board**: The persistent cross-application memory bank. Umbrella OS inherently links samples to their provenance, origin metadata, QC status, and computational history.
 
-# 4. Install JS dependencies
-pnpm install
+### 7. AI ORCHESTRATION
+**Vella**: The resident AI intent engine. It possesses tool-calling permissions across the entire OS, allowing it to autonomously spin up analysis modules, run comparisons, fetch logs, and synthesize multi-modal scientific conclusions.
 
-# 5. Initialise data lake directories
-python umbrella.py data init
-
-# 6. Copy environment config
-Copy-Item .env.example .env
-# Edit .env to add GEMINI_API_KEY if you want online Vella (optional)
-
-# 7a. Start both services with one command
-pnpm run dev:all
-
-# 7b. Or start them separately (two terminals)
-# Terminal 1:
-python -m uvicorn services.api.main:app --reload --port 8000
-# Terminal 2:
-pnpm run dev
-```
-
-Open **http://localhost:3000** — the desktop loads with 3 seeded bacterial isolates ready to analyse.
+### 8. REPRODUCIBLE REPORTING
+**Report Studio**: Every generated insight and model prediction can be bundled into a verifiable dossier, locking software versions and raw data hashes in an immutable record.
 
 ---
 
-## Full Stack Start (with Docker)
+## Development & Deployment
+For detailed guides on spinning up the infrastructure, refer to our comprehensive documentation suite:
+- `docs/ARCHITECTURE.md` - In-depth microservice topology.
+- `docs/SYSTEM_WORKFLOW.md` - Step-by-step lifecycles of data processing.
+- `docs/DATA_AND_PROVENANCE.md` - Data lineage and cryptographic hashing details.
+- `docs/DEVELOPMENT.md` - Local Docker Compose and script execution instructions.
+- `docs/DEPLOYMENT.md` - Cloud architecture mapping for Vercel, Render, and S3.
 
-Runs PostgreSQL (with pgvector), Redis, and MinIO alongside the application.
+## Live Production Environments
+- **Frontend OS**: [https://umbrella-ck3jxezfv-aryan-aroras-projects-685553cc.vercel.app](https://umbrella-ck3jxezfv-aryan-aroras-projects-685553cc.vercel.app)
+- **Backend API**: *(Deploy via Render Dashboard using Github integration)*
 
-```powershell
-# 1. Copy and configure environment
-Copy-Item .env.example .env
+## Scientific Limitations
+This system is strictly intended for **computational biology research, education, and simulation**. Results are computed models and statistical inferences, NOT ground-truth laboratory observations. The system provides heuristic guidance based on input algorithms. Always validate theoretical findings in a physical wet-lab environment before clinical or applied scientific use.
 
-# 2. Start infrastructure
-cd infra
-docker-compose up -d
-cd ..
+## Contributors
+See `AUTHORS.md`.
 
-# 3. Start backend
-python -m uvicorn services.api.main:app --reload --port 8000
-
-# 4. Start frontend (separate terminal)
-pnpm run dev
-```
-
-MinIO console is available at **http://localhost:9001** (user: `umbrella_admin`, password in `.env`).
-
----
-
-## Project Structure
-
-```
-Umbrella/
-├── apps/
-│   └── desktop/                    # Next.js 15 desktop OS shell
-│       ├── app/                    # Root layout + page (desktop renderer)
-│       ├── apps/                   # 17 native app components
-│       ├── components/desktop/     # WindowFrame, Taskbar, Launcher, DesktopIconGrid
-│       ├── components/ui/          # Shared UI primitives (Tooltip, etc.)
-│       ├── lib/store.ts            # Zustand full window manager
-│       └── types/desktop.ts        # WindowState, AppManifest, SampleRef types
-│
-├── services/
-│   ├── api/                        # FastAPI scientific backend
-│   │   ├── main.py                 # All endpoints + startup seed data
-│   │   ├── models.py               # SQLAlchemy ORM models
-│   │   ├── schemas.py              # Pydantic v2 schemas
-│   │   ├── database.py             # PostgreSQL + SQLite fallback
-│   │   ├── config.py               # pydantic-settings configuration
-│   │   └── forge_service.py        # Umbrella Forge app compiler
-│   └── vella/
-│       └── orchestrator.py         # Vella AI multi-provider orchestrator
-│
-├── core/
-│   └── bio/
-│       ├── fasta_parser.py         # Streaming FASTA parser + QC engine
-│       ├── alignment.py            # Pairwise variant / SNP detection
-│       └── radiation_sim.py        # Biophysical DNA damage simulation
-│
-├── ml/
-│   ├── features/extractor.py       # 35+ canonical AMR marker features
-│   ├── registry/model_store.py     # Cached inference + OOD detection + evidence
-│   └── training/train_baseline.py  # L2 LR + Platt calibration trainer
-│
-├── data/
-│   └── models/                     # Trained model artifacts (versioned)
-│       ├── ciprofloxacin/v1.0.0/   # model.joblib, calibrator.joblib, metrics.json
-│       ├── meropenem/v1.0.0/
-│       ├── tetracycline/v1.0.0/
-│       └── gentamicin/v1.0.0/
-│
-├── infra/
-│   ├── docker-compose.yml          # PostgreSQL (pgvector), Redis, MinIO
-│   └── postgres/init.sql           # Full DB schema + indexes
-│
-├── packages/                       # Shared workspace packages (stubs — not yet built)
-│
-├── umbrella.py                     # CLI: doctor, data init, data manifest, qc
-├── umbrella.bat                    # Windows wrapper for umbrella.py
-├── config.yaml                     # System config: storage, AMR pipeline, Vella, apps
-├── requirements.txt                # Python dependencies
-├── package.json                    # Monorepo root (pnpm scripts)
-└── pnpm-workspace.yaml             # Workspace: apps/* + packages/*
-```
-
----
-
-## Native Applications
-
-| App | Category | Status |
-|-----|----------|--------|
-| **Genome Competitor** | GM Comparison | Cross-tests DS query samples against bacteria, bacteriophages, and fungi with breakage loci and protein pocket targets |
-| **Stress Simulation Lab** | Cellular Kinetics | Gompertz growth models, live 2D filamentation canvas, and transcriptional stress gene induction heatmaps |
-| **DNA Benchmark** | Genomics / Demographics | Flagship demographic benchmark, self-building ASCII double helix, epigenetic age calculator |
-| **Bio Terminal** | Sandboxed CLI | 32 allowlisted bio/system commands, command history, execution audit logs, and security sandboxing |
-| **Biotech Auth Portal** | Security / RBAC | Google Workspace OAuth + JWT sessions, minimal white/black/yellow corporate UI, and animated clearance welcome |
-| **Genome Analyzer** | Core bio | UI complete, backend wired |
-| **AMR Sentinel** | Antimicrobial resistance | UI complete, ML inference wired |
-| **Sequence QC** | Quality control | UI complete, backend wired |
-| **Mutation Lab** | Sequence diff | UI complete, variant calling wired |
-| **Sample Vault** | Data registry | UI complete, CRUD wired |
-| **Pathogen Atlas** | Taxonomy browser | UI complete, taxonomy endpoint wired |
-| **Variant Explorer** | Genomics | UI complete, clustering/UMAP backend |
-| **Radiation Lab** | Biophysical simulation | UI complete, simulation engine wired |
-| **Science Lab** | Simulation | UI complete, timeline & mutation comparison |
-| **Research Desk** | RAG research | UI complete, pgvector pipeline |
-| **Analysis Studio** | Analytics / Parquet | UI complete, DuckDB 120GB out-of-core streaming evaluation |
-| **Report Studio** | PDF reporting | UI complete, export engine |
-| **Umbrella Forge** | Meta app compiler | UI complete, compiler wired end-to-end |
-| **Vella** | AI assistant | UI complete, multi-provider orchestrator wired |
-| **System Monitor** | Telemetry | UI complete, real-time psutil wired |
-| **Generated Forge App View** | Dynamic Forge output | Renderer complete |
-
----
-
-## ML Models
-
-Four antibiotic resistance models are trained and ready in `data/models/`. The backend loads them at inference time — no re-training is needed to run the application.
-
-| Antibiotic | ROC-AUC | PR-AUC | F1 | Top marker |
-|------------|---------|--------|----|-----------|
-| Ciprofloxacin | 0.9064 | 0.8846 | 0.9007 | parC_S80I |
-| Meropenem | — | — | — | blaNDM |
-| Tetracycline | — | — | — | tet(A) |
-| Gentamicin | — | — | — | aac(6') |
-
-> **Note:** Current models are trained on synthetically generated data that simulates biologically realistic resistance patterns. Metrics reflect synthetic benchmark performance. Models will be retrained on real BV-BRC phenotype data once the data acquisition pipeline is completed.
-
-To retrain:
-```bash
-python -m ml.training.train_baseline
-```
-
----
-
-## Umbrella CLI & Tooling
-
-Umbrella OS provides a unified CLI cross-compatible with Windows (PowerShell, Batch) and Linux/WSL (`./umbrella`):
-
-```powershell
-# 1. System Health & Environment Audit
-python umbrella.py doctor          # Or .\umbrella.ps1 doctor / umbrella doctor
-python umbrella.py system status   # Real-time CPU, RAM, disk, services telemetry
-
-# 2. Scientific Data Lake Management
-python umbrella.py data init       # Initialize all 12 lake directories & manifests
-python umbrella.py data inspect    # Storage breakdown & file count audit
-python umbrella.py data manifest   # View master dataset manifests
-python umbrella.py data download   # Download BV-BRC genomes & phenotypes
-python umbrella.py data verify     # Verify SHA-256 checksums across lake
-
-# 3. AMR & Machine Learning Pipeline
-python umbrella.py amr list-models # List panel status across 34 target antibiotics
-python umbrella.py ml train        # Train baseline logistic regression & GBM models
-python umbrella.py ml evaluate     # Evaluate ROC-AUC, PR-AUC, F1, and sensitivity
-
-# 4. Laboratory Operations
-python umbrella.py lab qc --input path/to/genome.fna
-python umbrella.py lab radiation --dose 100 --let high
-```
-
-Cross-platform helpers are provided under `infra/scripts/`:
-- `setup-wsl.sh`: Automated Ubuntu WSL2 setup (build-essential, cmake, pigz, lftp, venv, AMRFinderPlus).
-- `setup-windows.ps1`: Windows drive audit, WSL2 setup, Docker guidance.
-- `install-amrfinder.sh`: Version-pinned NCBI AMRFinderPlus installer.
-- `storage-audit.ps1` / `storage-audit.sh`: Volume capacity audit for optimal `DATA_ROOT`.
-- `start-infra.ps1` / `start-infra.sh`: Docker Compose infrastructure orchestrator.
-
----
-
-## Environment Variables
-
-Copy `.env.example` to `.env` and edit as needed.
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `PORT` | `3000` | Next.js frontend port |
-| `API_PORT` | `8000` | FastAPI backend port |
-| `DATABASE_URL` | postgres@localhost/umbrella_os | Full Postgres URL (omit to use SQLite fallback) |
-| `SQLITE_FALLBACK_PATH` | `data/umbrella_local.db` | SQLite path when Postgres is unavailable |
-| `REDIS_URL` | `redis://localhost:6379/0` | Redis connection |
-| `MINIO_ENDPOINT` | `localhost:9000` | MinIO S3 endpoint |
-| `GEMINI_API_KEY` | *(empty)* | Google Gemini API key — enables online Vella |
-| `OPENROUTER_API_KEY` | *(empty)* | OpenRouter fallback key |
-| `AMRFINDER_PATH` | `amrfinder` | Path to AMRFinderPlus binary (WSL) |
-| `DATA_ROOT` | `data` | Root of the scientific data lake |
-| `MAX_UPLOAD_MB` | `2048` | Max FASTA upload size in MB |
-
----
-
-## Current State
-
-See [CHANGELOG.md](CHANGELOG.md) for a full versioned breakdown.
-
-**Working today:**
-- Browser desktop OS — window manager, 17 apps, taskbar, launcher
-- FastAPI backend with all endpoints — auto-falls back to SQLite, no Docker required
-- FASTA upload, QC (N50, GC%, contig stats), pairwise variant calling
-- AMR feature extraction + ML resistance prediction with OOD detection
-- Biophysical radiation simulation (6 radiation types)
-- Vella AI with Gemini / OpenRouter / offline fallback
-- Umbrella Forge app compiler (intent → spec → install → live window)
-- 3 seeded benchmark isolates on first startup
-
-**Known gaps (in priority order):**
-1. `packages/` directory must be created manually (`New-Item -ItemType Directory packages`) — pnpm-workspace.yaml references it
-2. No authentication — all API routes are public
-3. CORS is wide-open (`allow_origins=["*"]`) — fine for local dev, must be locked before any deployment
-4. AMRFinderPlus binary not yet called — AMR findings come from seed data
-5. Redis/Celery worker not implemented — all processing is synchronous
-6. ML models trained on synthetic data — real BV-BRC training data not yet acquired
-7. No tests — no pytest suite, no Vitest suite
-
----
-
-## Roadmap
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for the full prioritised progression sequence.
-
-| Phase | Focus |
-|-------|-------|
-| **v0.1 (current)** | Core scaffold — desktop shell, all app UIs, FastAPI endpoints, SQLite fallback, trained baseline ML models |
-| **v0.2** | Bug fixes + hardening — fix pnpm workspace, add TanStack Query + Zod to frontend, scope CORS, wire async jobs |
-| **v0.3** | Real data + AMR integration — BV-BRC data download, AMRFinderPlus binary wired, Celery worker |
-| **v0.4** | Test coverage — pytest backend, Vitest frontend, CI pipeline |
-| **v0.5** | ML upgrade — real training data, LightGBM second model, k-mer features |
-| **v0.6** | Advanced features — window snapping, ResearchDesk RAG, AnalysisStudio Parquet, Report Studio export |
-| **v1.0** | Production readiness — auth, CORS scoping, pgvector embeddings, DNA foundation model adapters |
-
----
-
-## Documentation
-
-| Document | Contents |
-|----------|----------|
-| [DEVELOPMENT.md](DEVELOPMENT.md) | Local dev setup, debugging, code conventions, service scripts |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | System architecture, data flows, ML pipeline, window manager deep-dive |
-| [CHANGELOG.md](CHANGELOG.md) | Version history and current state |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guide, progression priorities, bug fix sequence |
-| [.agents/umbrella-investigation.md](.agents/umbrella-investigation.md) | Full automated codebase investigation report |
-
----
-
-## Licence
-
-Private — all rights reserved. See repository owner for access terms.
+## License
+Proprietary / Open Source Hybrid (See LICENSE).
